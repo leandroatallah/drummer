@@ -10,66 +10,35 @@ import (
 	"github.com/leandroatallah/firefly/internal/config"
 )
 
-// padding
-const (
-	pt = 2
-	pl = 2
-)
-
-func DrawScreen() (*ebiten.Image, *ebiten.DrawImageOptions) {
+func DrawScreen(width, height int) *ebiten.Image {
 	cfg := config.Get()
 
 	// container
-	containerWidth := cfg.ScreenWidth - (margin * 2)
-	containerHeight := cfg.ScreenHeight - (margin * 2)
-	innerWidth := containerWidth - (paddingX * 2)
-
-	container := ebiten.NewImage(containerWidth, containerHeight)
+	// TODO: Duplicated
+	innerWidth := width - (paddingX * 2)
+	container := ebiten.NewImage(width, height)
 	container.Fill(cfg.Colors.Dark)
-	containerOp := &ebiten.DrawImageOptions{}
-	containerOp.GeoM.Translate(float64(margin), float64(margin))
-
-	// player screen
-	drummerHeight := 21
-	drummer, drummerOp := drawDrummer(innerWidth, drummerHeight)
-	container.DrawImage(drummer, drummerOp)
 
 	// inner
-	innerHeight := containerHeight - (paddingY * 2) - drummerHeight - paddingY
+	// TODO: Duplicated
+	innerHeight := height - (paddingY * 2) - topRowHeight - paddingY
 
 	inner := ebiten.NewImage(innerWidth, innerHeight)
 	innerOp := &ebiten.DrawImageOptions{}
 	innerOp.GeoM.Translate(
 		float64(paddingX),
-		float64(drummerHeight+(paddingY*2)),
+		float64(topRowHeight+(paddingY*2)),
 	)
-
-	statusWidth := 48
-	// track (left collumn)
-	trackWidth := innerWidth - paddingY - statusWidth
-
-	track, trackOp := drawTrack(trackWidth, innerHeight)
-
-	// hud (right column)
-	textsPath := "assets/images/texts.png"
-	textsImg, _, err := ebitenutil.NewImageFromFile(textsPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	status, statusOp := drawStatusColumn(statusWidth, innerHeight, trackWidth, textsImg)
-
-	inner.DrawImage(track, trackOp)
-	inner.DrawImage(status, statusOp)
 
 	container.DrawImage(inner, innerOp)
 
-	return container, containerOp
+	return container
 }
 
-func drawDrummer(width, height int) (*ebiten.Image, *ebiten.DrawImageOptions) {
+func (s *PlayScene) drawDrummer(screen *ebiten.Image) {
 	cfg := config.Get()
 
-	drummer := ebiten.NewImage(width, height)
+	drummer := ebiten.NewImage(s.ui.innerWidth, topRowHeight)
 	drummer.Fill(cfg.Colors.Medium)
 	drummerOp := &ebiten.DrawImageOptions{}
 	drummerOp.GeoM.Translate(float64(paddingX), float64(paddingY))
@@ -80,25 +49,41 @@ func drawDrummer(width, height int) (*ebiten.Image, *ebiten.DrawImageOptions) {
 		log.Fatal(err)
 	}
 
-	drummer.DrawImage(drummerImg, nil)
+	frameOX, frameOY := 0, 0
+	frameRate := 20
+	frameSprites := 2
+	width := drummerImg.Bounds().Dx() / frameSprites
+	height := drummerImg.Bounds().Dy()
 
-	return drummer, drummerOp
+	elementWidth := drummerImg.Bounds().Dx()
+	frameCount := elementWidth / width
+	i := (s.count / frameRate) % frameCount
+	sx, sy := frameOX+i*width, frameOY
+
+	res := drummerImg.SubImage(
+		image.Rect(sx, sy, sx+width, sy+height),
+	).(*ebiten.Image)
+
+	drummer.DrawImage(res, nil)
+
+	screen.DrawImage(drummer, drummerOp)
 }
 
-func drawTrack(width, height int) (*ebiten.Image, *ebiten.DrawImageOptions) {
+func (s *PlayScene) drawTrack(screen *ebiten.Image) {
+	// s.ui.trackWidth, s.ui.innerHeight
 	arrowsLightPath := "assets/images/light-arrows.png"
 	arrowsDarkPath := "assets/images/dark-arrows.png"
 
 	cfg := config.Get()
 
-	track := ebiten.NewImage(width, height)
+	track := ebiten.NewImage(s.ui.trackWidth, s.ui.innerHeight)
 	track.Fill(cfg.Colors.Dark)
 
-	trackColWidth := (width - (paddingX/2)*3) / 4
-	trackLeft := ebiten.NewImage(trackColWidth, height)
-	trackDown := ebiten.NewImage(trackColWidth, height)
-	trackUp := ebiten.NewImage(trackColWidth, height)
-	trackRight := ebiten.NewImage(trackColWidth, height)
+	trackColWidth := (s.ui.trackWidth - (paddingX/2)*3) / 4
+	trackLeft := ebiten.NewImage(trackColWidth, s.ui.innerHeight)
+	trackDown := ebiten.NewImage(trackColWidth, s.ui.innerHeight)
+	trackUp := ebiten.NewImage(trackColWidth, s.ui.innerHeight)
+	trackRight := ebiten.NewImage(trackColWidth, s.ui.innerHeight)
 
 	trackLeft.Fill(cfg.Colors.Light)
 	trackDown.Fill(cfg.Colors.Light)
@@ -120,33 +105,33 @@ func drawTrack(width, height int) (*ebiten.Image, *ebiten.DrawImageOptions) {
 
 	// arrows bottom
 	bottomBorderHeight := paddingY / 2
-	bottomBorder := ebiten.NewImage(width, bottomBorderHeight)
+	bottomBorder := ebiten.NewImage(s.ui.trackWidth, bottomBorderHeight)
 	bottomBorder.Fill(cfg.Colors.Dark)
 	bottomBorderOp := &ebiten.DrawImageOptions{}
-	bottomBorderOp.GeoM.Translate(0, float64(height-trackColWidth-bottomBorderHeight))
+	bottomBorderOp.GeoM.Translate(0, float64(s.ui.innerHeight-trackColWidth-bottomBorderHeight))
 
 	arrowLeft := ebiten.NewImage(trackColWidth, trackColWidth)
 	arrowLeft.Fill(cfg.Colors.Medium)
 	arrowLeftOp := &ebiten.DrawImageOptions{}
-	arrowLeftOp.GeoM.Translate(0, float64(height-trackColWidth))
+	arrowLeftOp.GeoM.Translate(0, float64(s.ui.innerHeight-trackColWidth))
 	DrawCenteredImage(arrowLeft, arrowsLightLeft)
 
 	arrowDown := ebiten.NewImage(trackColWidth, trackColWidth)
 	arrowDown.Fill(cfg.Colors.Medium)
 	arrowDownOp := &ebiten.DrawImageOptions{}
-	arrowDownOp.GeoM.Translate(0, float64(height-trackColWidth))
+	arrowDownOp.GeoM.Translate(0, float64(s.ui.innerHeight-trackColWidth))
 	DrawCenteredImage(arrowDown, arrowsLightDown)
 
 	arrowUp := ebiten.NewImage(trackColWidth, trackColWidth)
 	arrowUp.Fill(cfg.Colors.Medium)
 	arrowUpOp := &ebiten.DrawImageOptions{}
-	arrowUpOp.GeoM.Translate(0, float64(height-trackColWidth))
+	arrowUpOp.GeoM.Translate(0, float64(s.ui.innerHeight-trackColWidth))
 	DrawCenteredImage(arrowUp, arrowsLightUp)
 
 	arrowRight := ebiten.NewImage(trackColWidth, trackColWidth)
 	arrowRight.Fill(cfg.Colors.Medium)
 	arrowRightOp := &ebiten.DrawImageOptions{}
-	arrowRightOp.GeoM.Translate(0, float64(height-trackColWidth))
+	arrowRightOp.GeoM.Translate(0, float64(s.ui.innerHeight-trackColWidth))
 	DrawCenteredImage(arrowRight, arrowsLightRight)
 
 	trackLeft.DrawImage(arrowLeft, arrowLeftOp)
@@ -195,71 +180,58 @@ func drawTrack(width, height int) (*ebiten.Image, *ebiten.DrawImageOptions) {
 	track.DrawImage(trackDown, trackDownOp)
 	track.DrawImage(bottomBorder, bottomBorderOp)
 
-	return track, nil
+	trackOp := &ebiten.DrawImageOptions{}
+	trackOp.GeoM.Translate(paddingX, topRowHeight+paddingY*2)
+
+	screen.DrawImage(track, trackOp)
 }
 
-func drawStatusColumn(
-	width, height, offsetWidth int, textsImg *ebiten.Image,
-) (*ebiten.Image, *ebiten.DrawImageOptions) {
-
-	status := ebiten.NewImage(width, height)
+func (s *PlayScene) drawStatusColumn(screen *ebiten.Image) {
+	status := ebiten.NewImage(leftColumnWidth, s.ui.innerHeight)
 	statusOp := &ebiten.DrawImageOptions{}
-	statusOp.GeoM.Translate(float64(offsetWidth+paddingY), 0)
+	statusOp.GeoM.Translate(float64(s.ui.trackWidth+paddingY+paddingX), topRowHeight+(paddingY*2))
 
-	scoreHeight := 22
-	score, scoreOp := drawStatusScore(width, scoreHeight, textsImg)
-
-	thermometerHeight := 22
-	thermometer, thermometerOp := drawThermometer(width, thermometerHeight, scoreHeight, textsImg)
-
-	illustrationHeight := height - scoreHeight - thermometerHeight - (paddingY * 2)
-	illustrationHeightOffset := scoreHeight + thermometerHeight
-	illustration, illustrationOp := drawIllustration(
-		width, illustrationHeight, illustrationHeightOffset, false,
-	)
-
-	status.DrawImage(score, scoreOp)
-	status.DrawImage(thermometer, thermometerOp)
-	status.DrawImage(illustration, illustrationOp)
-
-	return status, statusOp
+	screen.DrawImage(status, statusOp)
 }
 
-func drawStatusScore(
-	width, height int, textsImg *ebiten.Image,
-) (*ebiten.Image, *ebiten.DrawImageOptions) {
-	score := DrawStatusRectangle(width, height)
-	scoreTitle := textsImg.SubImage(image.Rect(0, 0, 29, 7)).(*ebiten.Image)
+func (s *PlayScene) drawScore(screen *ebiten.Image) {
+	score := DrawStatusRectangle(leftColumnWidth, scoreHeight)
+	scoreTitle := s.ui.textsImg.SubImage(image.Rect(0, 0, 29, 7)).(*ebiten.Image)
 	scoreTitleOp := &ebiten.DrawImageOptions{}
-	scoreTitleOp.GeoM.Translate(float64(pl), float64(pt))
+	scoreTitleOp.GeoM.Translate(float64(statusBoxPadding), float64(statusBoxPadding))
 	scoreAmount := ebiten.NewImage(35, 7)
-	scoreStr := fmt.Sprintf("%06d", 0)
+	scoreStr := fmt.Sprintf("%06d", s.score)
 	for i := 0; i < 6; i++ {
 		v := scoreStr[i : i+1]
-		n := GetImageNumber(textsImg, string(v))
+		n := GetImageNumber(s.ui.textsImg, string(v))
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(i*6), 0)
 		scoreAmount.DrawImage(n, op)
 	}
 	scoreAmountOp := &ebiten.DrawImageOptions{}
-	scoreAmountOp.GeoM.Translate(float64(pl), 11)
+	scoreAmountOp.GeoM.Translate(float64(statusBoxPadding), 11)
 	score.DrawImage(scoreTitle, scoreTitleOp)
 	score.DrawImage(scoreAmount, scoreAmountOp)
+	scoreOp := &ebiten.DrawImageOptions{}
+	scoreOp.GeoM.Translate(float64(s.ui.trackWidth+paddingX+paddingY), float64(topRowHeight+(paddingY*2)))
 
-	return score, nil
+	screen.DrawImage(score, scoreOp)
 }
 
-func drawThermometer(width, height, heightOffset int, textsImg *ebiten.Image) (*ebiten.Image, *ebiten.DrawImageOptions) {
+func (s *PlayScene) drawThermometer(screen *ebiten.Image) {
 	cfg := config.Get()
-	thermometer := DrawStatusRectangle(width, height)
+	thermometer := DrawStatusRectangle(leftColumnWidth, thermometerHeight)
 	thermometerOp := &ebiten.DrawImageOptions{}
-	thermometerOp.GeoM.Translate(0, float64(heightOffset+paddingY))
-	thermTitle := textsImg.SubImage(image.Rect(0, 8, 29, 15)).(*ebiten.Image)
+	thermometerOp.GeoM.Translate(
+		float64(s.ui.trackWidth+paddingX+paddingY),
+		float64(topRowHeight+scoreHeight+(paddingY*3)),
+	)
+	thermTitle := s.ui.textsImg.SubImage(image.Rect(0, 8, 29, 15)).(*ebiten.Image)
 	thermOp := &ebiten.DrawImageOptions{}
-	thermOp.GeoM.Translate(float64(pl), float64(pt))
+	thermOp.GeoM.Translate(float64(statusBoxPadding), float64(statusBoxPadding))
 	thermometer.DrawImage(thermTitle, thermOp)
 
-	therm := 2
+	therm := s.count % 60 / 10
 	blockWidth := 8
 	blockHeight := 5
 	block := ebiten.NewImage(blockWidth, blockHeight)
@@ -275,31 +247,36 @@ func drawThermometer(width, height, heightOffset int, textsImg *ebiten.Image) (*
 			block.DrawImage(blockHollow, op)
 		}
 		blockOp := &ebiten.DrawImageOptions{}
-		blockOp.GeoM.Translate(float64(pl+blockWidth*i+i*1), float64(pt+9))
+		blockOp.GeoM.Translate(float64(statusBoxPadding+blockWidth*i+i*1), float64(statusBoxPadding+9))
 		thermometer.DrawImage(block, blockOp)
 	}
 
-	return thermometer, thermometerOp
+	screen.DrawImage(thermometer, thermometerOp)
 }
 
-func drawIllustration(width, height, heightOffset int, dark bool) (*ebiten.Image, *ebiten.DrawImageOptions) {
-	cfg := config.Get()
-	illustration := DrawStatusRectangle(width, height)
-	illustrationOp := &ebiten.DrawImageOptions{}
-	illustrationOp.GeoM.Translate(0, float64(heightOffset+(paddingY*2)))
+func (s *PlayScene) drawIllustration(screen *ebiten.Image, dark bool) {
+	illustrationHeight := s.ui.innerHeight - scoreHeight - thermometerHeight - (paddingY * 2)
 
-	path := "assets/images/illustration-light.png"
+	cfg := config.Get()
+	illustration := DrawStatusRectangle(leftColumnWidth, illustrationHeight)
+	illustrationOp := &ebiten.DrawImageOptions{}
+	illustrationOp.GeoM.Translate(
+		float64(s.ui.trackWidth+paddingX+paddingY),
+		float64(topRowHeight+scoreHeight+thermometerHeight+(paddingY*4)),
+	)
+
+	if s.count%2 == 0 {
+		dark = true
+	}
+
+	img := illustrationLight
 	if dark {
 		illustration.Fill(cfg.Colors.Medium)
-		path = "assets/images/illustration-dark.png"
-	}
-	img, _, err := ebitenutil.NewImageFromFile(path)
-	if err != nil {
-		log.Fatal(err)
+		img = illustrationDark
 	}
 	DrawCenteredImage(illustration, img)
 
-	return illustration, illustrationOp
+	screen.DrawImage(illustration, illustrationOp)
 }
 
 func DrawStatusRectangle(width, height int) *ebiten.Image {
