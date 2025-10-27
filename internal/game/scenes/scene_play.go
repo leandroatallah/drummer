@@ -2,10 +2,11 @@ package gamescene
 
 import (
 	"log"
-	"time"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/leandroatallah/firefly/internal/config"
 	"github.com/leandroatallah/firefly/internal/engine/actors"
 	"github.com/leandroatallah/firefly/internal/engine/assets/font"
@@ -16,7 +17,6 @@ import (
 )
 
 const (
-	bgSound = "assets/audio/Sketchbook.ogg"
 
 	// UI
 	screenMargin      = 4
@@ -44,19 +44,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-type CachedImage struct {
-	image   *ebiten.Image
-	imageOp *ebiten.DrawImageOptions
-}
-
-func (i *CachedImage) DrawTo(screen *ebiten.Image) {
-	screen.DrawImage(i.image, i.imageOp)
-}
-
-func (i *CachedImage) DrawOver(img *ebiten.Image) {
-	i.image.DrawImage(img, nil)
 }
 
 type ScreenUI struct {
@@ -102,6 +89,10 @@ type PlayScene struct {
 	levelCompleted bool
 	score          int
 	ui             *ScreenUI
+	keyControl     *KeyControl
+	mainTrack      *MainTrack
+	song           *Song
+	speed          float64
 
 	// Cached images
 	containerImage *CachedImage
@@ -112,71 +103,84 @@ func NewPlayScene(context *core.AppContext) *PlayScene {
 	if err != nil {
 		log.Fatal(err)
 	}
-	scene := PlayScene{
-		BaseScene: *scene.NewScene(),
-		mainText:  mainText,
-		ui:        NewScreenUI(),
+
+	// TODO: Should receive from somewhere (maybe context)
+	song := NewSong("internal/game/songs/smell-like-teen-spirit.json")
+	scene := &PlayScene{
+		BaseScene:  *scene.NewScene(),
+		mainText:   mainText,
+		ui:         NewScreenUI(),
+		keyControl: NewKeyControl(),
+		song:       song,
+		speed:      2.0,
 	}
+
+	song.offsetBpm = 4 / scene.speed
+	scene.mainTrack = NewMainTrack(scene)
+
 	// scene.SetAppContext(context)
-	return &scene
+	return scene
 }
 
 func (s *PlayScene) OnStart() {
 	s.BaseScene.OnStart()
 
-	container := DrawScreen(s.ui.containerWidth, s.ui.containerHeight)
+	container := s.DrawScreen()
 	containerOp := &ebiten.DrawImageOptions{}
 	containerOp.GeoM.Translate(float64(s.ui.margin), float64(s.ui.margin))
 
 	s.drawDrummer(container)
-	// TODO: Should draw each track separated?
-	s.drawTrack(container)
+	s.mainTrack.Draw(container)
 	s.drawStatusColumn(container)
 
-	s.drawIllustration(container, false)
+	s.drawIllustration(container)
 	s.drawScore(container)
 	s.drawThermometer(container)
 
 	s.containerImage = &CachedImage{container, containerOp}
 
-	// TODO: Is it working?
-	// Play BG sound
-	go func() {
-		time.Sleep(1 * time.Second)
-		s.AudioManager().PlaySound(bgSound)
-	}()
+	// Play sound
+	s.AudioManager().PlaySound("assets/audio/" + s.song.Filename)
 }
 
 func (s *PlayScene) Update() error {
 	s.count++
 
+	s.handleKeyPress()
+
+	s.handleRightKeys()
+
+	s.mainTrack.Update()
+	s.song.Update()
+
 	return nil
 }
 
 func (s *PlayScene) Draw(screen *ebiten.Image) {
-	// TODO: Move all to OnStart method
 	cfg := config.Get()
 	screen.Fill(cfg.Colors.Light)
 
-	// TODO: Split in different images to update when necessary
 	s.containerImage.DrawTo(screen)
 
 	// Dynamic content
 	container, containerOp := s.DrawContainer()
 
-	// TODO: Implement a solution to check if it should be updated
+	s.drawIllustration(container)
+
 	if true {
 		s.drawDrummer(container)
-		s.drawIllustration(container, false)
 		s.drawScore(container)
 		s.drawThermometer(container)
-		s.containerImage.DrawOver(container)
 	}
+
+	s.mainTrack.Draw(container)
+
 	screen.DrawImage(container, containerOp)
+	s.containerImage.DrawOver(container)
 }
 
 func (s *PlayScene) OnFinish() {
-	s.AudioManager().PauseMusic(bgSound)
+	s.AudioManager().PauseMusic("assets/audio/" + s.song.Filename)
 }
 
 func (s *PlayScene) finishLevel() {
@@ -203,4 +207,50 @@ func (s *PlayScene) DrawContainer() (*ebiten.Image, *ebiten.DrawImageOptions) {
 	containerOp.GeoM.Translate(float64(s.ui.margin), float64(s.ui.margin))
 
 	return container, containerOp
+}
+
+func (s *PlayScene) handleKeyPress() {
+	s.keyControl.Reset()
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+		s.keyControl.PressLeft()
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
+		s.keyControl.PressDown()
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+		s.keyControl.PressUp()
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+		s.keyControl.PressRight()
+	}
+}
+
+func (s *PlayScene) handleRightKeys() {
+	tolerance := 0.25
+
+	// TODO: Prevent from kit two times the same note
+	if s.keyControl.IsSomeKeyPressed() {
+		for _, n := range s.song.PlayingNotes {
+			position := float64(n.Onset) - s.song.GetPositionInBPM()
+			if math.Abs(position) > tolerance {
+				continue
+			}
+
+			switch {
+			case s.keyControl.isLeftPressed && n.Direction == "left":
+				s.IncreaseScore()
+			case s.keyControl.isDownPressed && n.Direction == "down":
+				s.IncreaseScore()
+			case s.keyControl.isUpPressed && n.Direction == "up":
+				s.IncreaseScore()
+			case s.keyControl.isRightPressed && n.Direction == "right":
+				s.IncreaseScore()
+			}
+		}
+	}
+}
+
+func (s *PlayScene) IncreaseScore() {
+	s.score += 5
 }
