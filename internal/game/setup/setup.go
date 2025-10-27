@@ -72,13 +72,14 @@ func Setup() {
 
 // loadAudioAssets is a helper function to load all audio files from the assets directory.
 func loadAudioAssets(am *audiomanager.AudioManager) {
-	files, err := os.ReadDir("assets")
+	files, err := os.ReadDir("assets/audio")
 	if err != nil {
 		log.Fatal(err)
 	}
 	for _, file := range files {
 		if !file.IsDir() && (strings.HasSuffix(file.Name(), ".ogg") || strings.HasSuffix(file.Name(), ".wav")) {
-			audioItem, err := am.Load("assets/audio/" + file.Name())
+			path := "assets/audio/" + file.Name()
+			audioItem, err := am.Load(path)
 			if err != nil {
 				log.Printf("error loading audio file %s: %v", file.Name(), err)
 				continue
