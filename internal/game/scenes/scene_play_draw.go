@@ -39,6 +39,10 @@ func (s *PlayScene) drawDrummer(screen *ebiten.Image) {
 	drummerOp.GeoM.Translate(float64(paddingX), float64(paddingY))
 
 	drummerImgPath := "assets/images/drummer-idle.png"
+	if s.thermometer == thermometerLimit {
+		drummerImgPath = "assets/images/drummer-rock.png"
+	}
+
 	drummerImg, _, err := ebitenutil.NewImageFromFile(drummerImgPath)
 	if err != nil {
 		log.Fatal(err)
@@ -108,7 +112,7 @@ func (s *PlayScene) drawThermometer(screen *ebiten.Image) {
 	thermOp.GeoM.Translate(float64(statusBoxPadding), float64(statusBoxPadding))
 	thermometer.DrawImage(thermTitle, thermOp)
 
-	therm := s.count % 60 / 10
+	therm := s.thermometer / 5
 	blockWidth := 8
 	blockHeight := 5
 	block := ebiten.NewImage(blockWidth, blockHeight)

@@ -17,6 +17,7 @@ import (
 )
 
 const (
+	thermometerLimit = 25
 
 	// UI
 	screenMargin      = 4
@@ -88,6 +89,8 @@ type PlayScene struct {
 	mainText       *font.FontText
 	levelCompleted bool
 	score          int
+	streak         int
+	thermometer    int // thermometer starts on 0 and can range from -10 to 10
 	ui             *ScreenUI
 	keyControl     *KeyControl
 	mainTrack      *MainTrack
@@ -105,15 +108,16 @@ func NewPlayScene(context *core.AppContext) *PlayScene {
 	}
 
 	// TODO: Should receive from somewhere (maybe context)
-	song := NewSong("internal/game/songs/smell-like-teen-spirit.json")
 	scene := &PlayScene{
-		BaseScene:  *scene.NewScene(),
-		mainText:   mainText,
-		ui:         NewScreenUI(),
-		keyControl: NewKeyControl(),
-		song:       song,
-		speed:      2.0,
+		BaseScene:   *scene.NewScene(),
+		mainText:    mainText,
+		ui:          NewScreenUI(),
+		keyControl:  NewKeyControl(),
+		speed:       2.0,
+		thermometer: 0,
 	}
+	song := NewSong("internal/game/songs/smell-like-teen-spirit.json", scene)
+	scene.song = song
 
 	song.offsetBpm = 4 / scene.speed
 	scene.mainTrack = NewMainTrack(scene)
@@ -227,30 +231,58 @@ func (s *PlayScene) handleKeyPress() {
 }
 
 func (s *PlayScene) handleRightKeys() {
-	tolerance := 0.25
+	tolerance := 0.5
 
-	// TODO: Prevent from kit two times the same note
-	if s.keyControl.IsSomeKeyPressed() {
-		for _, n := range s.song.PlayingNotes {
-			position := float64(n.Onset) - s.song.GetPositionInBPM()
-			if math.Abs(position) > tolerance {
-				continue
-			}
+	if !s.keyControl.IsSomeKeyPressed() {
+		return
+	}
 
-			switch {
-			case s.keyControl.isLeftPressed && n.Direction == "left":
-				s.IncreaseScore()
-			case s.keyControl.isDownPressed && n.Direction == "down":
-				s.IncreaseScore()
-			case s.keyControl.isUpPressed && n.Direction == "up":
-				s.IncreaseScore()
-			case s.keyControl.isRightPressed && n.Direction == "right":
-				s.IncreaseScore()
-			}
+	hasAnyCorrect := false
+	for i, n := range s.song.PlayingNotes {
+		if n.skip {
+			continue
 		}
+
+		position := float64(n.Onset) - s.song.GetPositionInBPM()
+		if math.Abs(position) > tolerance {
+			continue
+		}
+
+		switch {
+		case s.keyControl.isLeftPressed && n.Direction == "left":
+			s.IncreaseScore()
+			hasAnyCorrect = true
+		case s.keyControl.isDownPressed && n.Direction == "down":
+			s.IncreaseScore()
+			hasAnyCorrect = true
+		case s.keyControl.isUpPressed && n.Direction == "up":
+			s.IncreaseScore()
+			hasAnyCorrect = true
+		case s.keyControl.isRightPressed && n.Direction == "right":
+			s.IncreaseScore()
+			hasAnyCorrect = true
+		}
+		s.song.PlayingNotes[i].skip = true
+	}
+
+	if !hasAnyCorrect {
+		s.handleMistake()
 	}
 }
 
 func (s *PlayScene) IncreaseScore() {
 	s.score += 5
+	s.streak++
+	s.thermometer++
+	if s.thermometer > thermometerLimit {
+		s.thermometer = thermometerLimit
+	}
+}
+
+func (s *PlayScene) handleMistake() {
+	s.streak = 0
+	s.thermometer--
+	if s.thermometer < 0 {
+		s.thermometer = 0
+	}
 }

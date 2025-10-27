@@ -10,6 +10,7 @@ import (
 type Note struct {
 	Direction string `json:"direction"`
 	Onset     int    `json:"onset"`
+	skip      bool
 }
 
 type Song struct {
@@ -17,6 +18,7 @@ type Song struct {
 	Filename string  `json:"filename"`
 	Bpm      int     `json:"bpm"`
 	Notes    []*Note `json:"notes"`
+	scene    *PlayScene
 
 	PlayingNotes map[int]*Note
 	noteIndex    int
@@ -24,7 +26,7 @@ type Song struct {
 	count        int
 }
 
-func NewSong(path string) *Song {
+func NewSong(path string, scene *PlayScene) *Song {
 	// TODO: Read song data from JSON file.
 	jsonFile, err := os.Open(path)
 	if err != nil {
@@ -42,6 +44,7 @@ func NewSong(path string) *Song {
 		log.Fatal(err)
 	}
 	song.PlayingNotes = make(map[int]*Note)
+	song.scene = scene
 
 	return &song
 }
@@ -52,6 +55,9 @@ func (s *Song) Update() error {
 	// Remove old notes from PlayingNotes
 	for i, n := range s.PlayingNotes {
 		if s.GetPositionInBPM() > float64(n.Onset)+1 { // 1 beat buffer
+			if !n.skip {
+				s.scene.handleMistake()
+			}
 			delete(s.PlayingNotes, i)
 		}
 	}
