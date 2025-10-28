@@ -38,9 +38,12 @@ func (s *PlayScene) drawDrummer(screen *ebiten.Image) {
 	drummerOp := &ebiten.DrawImageOptions{}
 	drummerOp.GeoM.Translate(float64(paddingX), float64(paddingY))
 
-	drummerImgPath := "assets/images/drummer-idle.png"
-	if s.thermometer == thermometerLimit {
+	var drummerImgPath string
+	switch {
+	case s.thermometer == thermometerLimit:
 		drummerImgPath = "assets/images/drummer-rock.png"
+	default:
+		drummerImgPath = "assets/images/drummer-idle.png"
 	}
 
 	drummerImg, _, err := ebitenutil.NewImageFromFile(drummerImgPath)
@@ -152,6 +155,24 @@ func (s *PlayScene) drawIllustration(screen *ebiten.Image) {
 		img = illustrationDark
 	}
 	DrawCenteredImage(illustration, img)
+
+	// streak
+	streakStr := fmt.Sprintf("%d", s.streak)
+	streakTxt := ebiten.NewImage(6*len(streakStr), 8)
+	for i, c := range fmt.Sprintf("%d", s.streak) {
+		txt := GetImageNumber(s.ui.textsImg, string(c))
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Translate(float64(1+6*i), 0)
+		streakTxt.DrawImage(txt, op)
+	}
+
+	streakRect := ebiten.NewImage(3+len(streakStr)*6, 12)
+	streakRect.Fill(cfg.Colors.Light)
+	streakRectOp := &ebiten.DrawImageOptions{}
+	streakRectOp.GeoM.Translate(1, 1)
+	DrawCenteredImage(streakRect, streakTxt)
+
+	illustration.DrawImage(streakRect, streakRectOp)
 
 	screen.DrawImage(illustration, illustrationOp)
 }

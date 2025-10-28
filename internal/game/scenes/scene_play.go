@@ -238,7 +238,7 @@ func (s *PlayScene) handleRightKeys() {
 	}
 
 	hasAnyCorrect := false
-	for i, n := range s.song.PlayingNotes {
+	for _, n := range s.song.PlayingNotes {
 		if n.skip {
 			continue
 		}
@@ -252,17 +252,20 @@ func (s *PlayScene) handleRightKeys() {
 		case s.keyControl.isLeftPressed && n.Direction == "left":
 			s.IncreaseScore()
 			hasAnyCorrect = true
+			n.skip = true
 		case s.keyControl.isDownPressed && n.Direction == "down":
 			s.IncreaseScore()
 			hasAnyCorrect = true
+			n.skip = true
 		case s.keyControl.isUpPressed && n.Direction == "up":
 			s.IncreaseScore()
 			hasAnyCorrect = true
+			n.skip = true
 		case s.keyControl.isRightPressed && n.Direction == "right":
 			s.IncreaseScore()
 			hasAnyCorrect = true
+			n.skip = true
 		}
-		s.song.PlayingNotes[i].skip = true
 	}
 
 	if !hasAnyCorrect {
@@ -281,7 +284,7 @@ func (s *PlayScene) IncreaseScore() {
 
 func (s *PlayScene) handleMistake() {
 	s.streak = 0
-	s.thermometer--
+	s.thermometer -= 2
 	if s.thermometer < 0 {
 		s.thermometer = 0
 	}
