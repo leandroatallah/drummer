@@ -12,11 +12,12 @@ import (
 )
 
 type BaseScene struct {
-	count        int
-	Manager      navigation.SceneManager
-	audiomanager *audiomanager.AudioManager
-	space        *physics.Space
-	AppContext   *core.AppContext
+	count          int
+	Manager        navigation.SceneManager
+	audiomanager   *audiomanager.AudioManager
+	space          *physics.Space
+	AppContext     *core.AppContext
+	IsKeysDisabled bool
 }
 
 func NewScene() *BaseScene {
@@ -60,4 +61,12 @@ func (s *BaseScene) PhysicsSpace() *physics.Space {
 
 func (s *BaseScene) AudioManager() *audiomanager.AudioManager {
 	return s.audiomanager
+}
+
+func (s *BaseScene) EnableKeys() {
+	s.IsKeysDisabled = false
+}
+
+func (s *BaseScene) DisableKeys() {
+	s.IsKeysDisabled = true
 }

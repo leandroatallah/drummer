@@ -53,7 +53,8 @@ func (s *MenuScene) Update() error {
 		s.showPressStart = !s.showPressStart
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
+	if !s.IsKeysDisabled && ebiten.IsKeyPressed(ebiten.KeyEnter) {
+		s.DisableKeys()
 		s.Manager.NavigateTo(SceneTrackSelection, transition.NewFader())
 	}
 

@@ -42,7 +42,8 @@ func (s *TrackSelectionScene) OnStart() {
 func (s *TrackSelectionScene) Update() error {
 	s.count++
 
-	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
+	if !s.IsKeysDisabled && ebiten.IsKeyPressed(ebiten.KeyEnter) {
+		s.DisableKeys()
 		s.Manager.NavigateTo(ScenePlay, transition.NewFader())
 	}
 
@@ -74,5 +75,5 @@ func (s *TrackSelectionScene) Draw(screen *ebiten.Image) {
 }
 
 func (s *TrackSelectionScene) OnFinish() {
-	s.audiomanager.FadeOutAll(1 * time.Second)
+	s.audiomanager.FadeOut(bgSound, 1*time.Second)
 }
