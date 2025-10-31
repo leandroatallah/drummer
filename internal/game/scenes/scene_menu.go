@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"github.com/leandroatallah/firefly/internal/config"
 	"github.com/leandroatallah/firefly/internal/engine/assets/font"
@@ -15,14 +16,16 @@ import (
 )
 
 const (
-	kickBackBG = "assets/audio/kick_backOGG.ogg"
+	bgSound = "assets/audio/black-sabbath-paranoid.ogg"
 )
 
 type MenuScene struct {
 	scene.BaseScene
 
-	audiomanager *audiomanager.AudioManager
-	fontText     *font.FontText
+	count          int
+	audiomanager   *audiomanager.AudioManager
+	fontText       *font.FontText
+	showPressStart bool
 }
 
 func NewMenuScene(context *core.AppContext) *MenuScene {
@@ -39,36 +42,92 @@ func NewMenuScene(context *core.AppContext) *MenuScene {
 func (s *MenuScene) OnStart() {
 	// Init audio
 	s.audiomanager = s.Manager.AudioManager()
-	s.audiomanager.SetVolume(1)
-	// s.audiomanager.PlayMusic(kickBackBG)
+	s.audiomanager.PauseAll()
+	s.audiomanager.PlayMusic(bgSound)
 }
 
 func (s *MenuScene) Update() error {
+	s.count++
+
+	if s.count%40 == 0 {
+		s.showPressStart = !s.showPressStart
+	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
-		s.Manager.NavigateTo(ScenePlay, transition.NewFader())
+		s.Manager.NavigateTo(SceneTrackSelection, transition.NewFader())
 	}
 
 	return nil
 }
 
 func (s *MenuScene) Draw(screen *ebiten.Image) {
-	screen.Fill(color.RGBA{0xCC, 0x24, 0x40, 0xff})
-
-	textOp := &text.DrawOptions{
-		LayoutOptions: text.LayoutOptions{
-			PrimaryAlign:   text.AlignCenter,
-			SecondaryAlign: text.AlignCenter,
-			LineSpacing:    0,
-		},
+	pressStartImg, _, err := ebitenutil.NewImageFromFile("assets/images/press-start.png")
+	if err != nil {
+		log.Fatal(err)
 	}
-	textOp.GeoM.Translate(
-		float64(config.Get().ScreenWidth/2),
-		float64(config.Get().ScreenHeight/2),
-	)
-	textOp.ColorScale.Scale(1, 1, 1, float32(120))
-	s.fontText.Draw(screen, "Press Enter to start", 8, textOp)
+
+	DrawCenteredImage(screen, pressStartImg)
+
+	if s.showPressStart {
+		s.DrawPressStartText(screen)
+	}
 }
 
-func (s *MenuScene) OnFinish() {
-	s.audiomanager.PauseMusic(kickBackBG)
+func (s *MenuScene) OnFinish() {}
+
+func (s *MenuScene) DrawPressStartText(screen *ebiten.Image) {
+	cfg := config.Get()
+
+	type txt struct {
+		offsetX float64
+		offsetY float64
+		color   color.RGBA
+	}
+
+	textMap := []txt{
+		{
+			offsetX: -1, offsetY: -1,
+			color: cfg.Colors.Light,
+		},
+		{
+			offsetX: 1, offsetY: 1,
+			color: cfg.Colors.Light,
+		},
+		{
+			offsetX: -1, offsetY: 1,
+			color: cfg.Colors.Light,
+		},
+		{
+			offsetX: 1, offsetY: -1,
+			color: cfg.Colors.Light,
+		},
+		{
+			offsetX: 1, offsetY: 0,
+			color: cfg.Colors.Light,
+		},
+		{
+			offsetX: 0, offsetY: 1,
+			color: cfg.Colors.Light,
+		},
+		{
+			offsetX: 0, offsetY: 0,
+			color: cfg.Colors.Dark,
+		},
+	}
+
+	for _, t := range textMap {
+		textOp := &text.DrawOptions{
+			LayoutOptions: text.LayoutOptions{
+				PrimaryAlign:   text.AlignCenter,
+				SecondaryAlign: text.AlignCenter,
+				LineSpacing:    0,
+			},
+		}
+		textOp.GeoM.Translate(
+			float64(cfg.ScreenWidth/2)+t.offsetX,
+			float64(cfg.ScreenHeight/2)+t.offsetY,
+		)
+		textOp.ColorScale.ScaleWithColor(t.color)
+		s.fontText.Draw(screen, "Press Enter", 8, textOp)
+	}
 }
