@@ -30,9 +30,14 @@ const (
 	thermometerHeight = 22
 )
 
+// TODO: Replace images with a initial image loading
 var (
 	illustrationDark  *ebiten.Image
 	illustrationLight *ebiten.Image
+	drummerIdleImg    *ebiten.Image
+	drummerRockImg    *ebiten.Image
+	arrowsLightImg    *ebiten.Image
+	arrowsDarkImg     *ebiten.Image
 )
 
 func init() {
@@ -42,6 +47,22 @@ func init() {
 		log.Fatal(err)
 	}
 	illustrationDark, _, err = ebitenutil.NewImageFromFile("assets/images/illustration-dark.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	drummerIdleImg, _, err = ebitenutil.NewImageFromFile("assets/images/drummer-idle.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	drummerRockImg, _, err = ebitenutil.NewImageFromFile("assets/images/drummer-rock.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	arrowsLightImg, _, err = ebitenutil.NewImageFromFile(arrowsLightPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+	arrowsDarkImg, _, err = ebitenutil.NewImageFromFile(arrowsDarkPath)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/leandroatallah/firefly/internal/config"
 )
 
@@ -45,16 +44,6 @@ func (t *MainTrack) Draw(screen *ebiten.Image) {
 	trackDown.Fill(cfg.Colors.Light)
 	trackUp.Fill(cfg.Colors.Light)
 	trackRight.Fill(cfg.Colors.Light)
-
-	// arrows images
-	arrowsLightImg, _, err := ebitenutil.NewImageFromFile(arrowsLightPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	arrowsDarkImg, _, err := ebitenutil.NewImageFromFile(arrowsDarkPath)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// arrows bottom
 	bottomBorderHeight := paddingY / 2

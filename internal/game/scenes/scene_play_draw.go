@@ -3,15 +3,15 @@ package gamescene
 import (
 	"fmt"
 	"image"
-	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/leandroatallah/firefly/internal/config"
 )
 
-const arrowsLightPath = "assets/images/light-arrows.png"
-const arrowsDarkPath = "assets/images/dark-arrows.png"
+const (
+	arrowsLightPath = "assets/images/light-arrows.png"
+	arrowsDarkPath  = "assets/images/dark-arrows.png"
+)
 
 func (s *PlayScene) DrawScreen() *ebiten.Image {
 	cfg := config.Get()
@@ -38,17 +38,12 @@ func (s *PlayScene) drawDrummer(screen *ebiten.Image) {
 	drummerOp := &ebiten.DrawImageOptions{}
 	drummerOp.GeoM.Translate(float64(paddingX), float64(paddingY))
 
-	var drummerImgPath string
+	var drummerImg *ebiten.Image
 	switch {
 	case s.thermometer == thermometerLimit:
-		drummerImgPath = "assets/images/drummer-rock.png"
+		drummerImg = drummerRockImg
 	default:
-		drummerImgPath = "assets/images/drummer-idle.png"
-	}
-
-	drummerImg, _, err := ebitenutil.NewImageFromFile(drummerImgPath)
-	if err != nil {
-		log.Fatal(err)
+		drummerImg = drummerIdleImg
 	}
 
 	frameOX, frameOY := 0, 0

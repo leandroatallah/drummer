@@ -19,6 +19,16 @@ const (
 	bgSound = "assets/audio/black-sabbath-paranoid.ogg"
 )
 
+var pressStartImg *ebiten.Image
+
+func init() {
+	var err error
+	pressStartImg, _, err = ebitenutil.NewImageFromFile("assets/images/press-start.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 type MenuScene struct {
 	scene.BaseScene
 
@@ -62,11 +72,6 @@ func (s *MenuScene) Update() error {
 }
 
 func (s *MenuScene) Draw(screen *ebiten.Image) {
-	pressStartImg, _, err := ebitenutil.NewImageFromFile("assets/images/press-start.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	DrawCenteredImage(screen, pressStartImg)
 
 	if s.showPressStart {

@@ -15,6 +15,16 @@ import (
 	"github.com/leandroatallah/firefly/internal/engine/systems/audiomanager"
 )
 
+var selectionImg *ebiten.Image
+
+func init() {
+	var err error
+	selectionImg, _, err = ebitenutil.NewImageFromFile("assets/images/track-selection.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 type TrackSelectionScene struct {
 	scene.BaseScene
 
@@ -51,10 +61,6 @@ func (s *TrackSelectionScene) Update() error {
 }
 
 func (s *TrackSelectionScene) Draw(screen *ebiten.Image) {
-	selectionImg, _, err := ebitenutil.NewImageFromFile("assets/images/track-selection.png")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	frameOX, frameOY := 0, 0
 	frameSprites := 3
