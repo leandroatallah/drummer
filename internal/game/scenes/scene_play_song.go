@@ -7,6 +7,13 @@ import (
 	"os"
 )
 
+const (
+	// NoteOffset adjusts the timing of the notes to match the audio.
+	// A positive value makes the notes appear later (you hit them earlier).
+	// A negative value makes the notes appear earlier (you hit them later).
+	NoteOffset = 0.23
+)
+
 type Note struct {
 	Direction string `json:"direction"`
 	Onset     int    `json:"onset"`
@@ -97,8 +104,19 @@ func (s *Song) NextNote() *Note {
 // In 60 bpm, 1 bpm happens one time per second
 // then, 60 counts is 1 beat
 func (s *Song) GetPositionInBPM() float64 {
-	ticksPerBeat := s.GetTicksPerBeat()
-	return float64(s.count) / ticksPerBeat
+	if s.scene.songPlayer == nil {
+		return 0
+	}
+	// Get the current position of the audio player
+	currentTime := s.scene.songPlayer.Current()
+
+	// Convert the time to seconds
+	seconds := currentTime.Seconds()
+
+	// Calculate the position in beats
+	beats := seconds * (float64(s.Bpm) / 60.0)
+
+	return beats + NoteOffset
 }
 
 func (s *Song) GetTicksPerBeat() float64 {

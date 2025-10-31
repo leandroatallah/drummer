@@ -4,6 +4,8 @@ import (
 	"log"
 	"math"
 
+	"github.com/hajimehoshi/ebiten/v2/audio"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -117,6 +119,7 @@ type PlayScene struct {
 	mainTrack      *MainTrack
 	song           *Song
 	speed          float64
+	songPlayer     *audio.Player
 
 	// Cached images
 	containerImage *CachedImage
@@ -163,27 +166,29 @@ func (s *PlayScene) OnStart() {
 	s.drawThermometer(container)
 
 	s.containerImage = &CachedImage{container, containerOp}
-
-	// Play sound
-	s.AudioManager().PlaySound("assets/audio/" + s.song.Filename)
 }
 
 func (s *PlayScene) Update() error {
 	s.count++
 
-	s.handleKeyPress()
+	if s.songPlayer == nil && !s.AudioManager().IsPlayingSomething() {
+		s.AudioManager().SetVolume(1)
+		s.songPlayer = s.AudioManager().PlaySound("assets/audio/" + s.song.Filename)
+	}
 
-	s.handleRightKeys()
-
-	s.mainTrack.Update()
-	s.song.Update()
+	if s.songPlayer != nil && s.songPlayer.IsPlaying() {
+		s.handleKeyPress()
+		s.handleRightKeys()
+		s.mainTrack.Update()
+		s.song.Update()
+	}
 
 	return nil
 }
 
 func (s *PlayScene) Draw(screen *ebiten.Image) {
 	cfg := config.Get()
-	screen.Fill(cfg.Colors.Light)
+	screen.Fill(cfg.Colors.Medium)
 
 	s.containerImage.DrawTo(screen)
 
@@ -205,7 +210,9 @@ func (s *PlayScene) Draw(screen *ebiten.Image) {
 }
 
 func (s *PlayScene) OnFinish() {
-	s.AudioManager().PauseMusic("assets/audio/" + s.song.Filename)
+	if s.songPlayer != nil {
+		s.songPlayer.Pause()
+	}
 }
 
 func (s *PlayScene) finishLevel() {
