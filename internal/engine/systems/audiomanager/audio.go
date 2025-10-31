@@ -69,13 +69,13 @@ func (am *AudioManager) Add(name string, data []byte) {
 
 	switch {
 	case strings.HasSuffix(name, ".ogg"):
-		s, err = vorbis.DecodeWithoutResampling(bytes.NewReader(data))
+		s, err = vorbis.DecodeWithSampleRate(sampleRate, bytes.NewReader(data))
 		if err != nil {
 			log.Printf("failed to decode ogg file: %v", err)
 			return
 		}
 	case strings.HasSuffix(name, ".wav"):
-		s, err = wav.DecodeWithoutResampling(bytes.NewReader(data))
+		s, err = wav.DecodeWithSampleRate(sampleRate, bytes.NewReader(data))
 		if err != nil {
 			log.Printf("failed to decode wav file: %v", err)
 			return
