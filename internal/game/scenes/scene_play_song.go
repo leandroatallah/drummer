@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 )
 
 const (
@@ -15,8 +16,8 @@ const (
 )
 
 type Note struct {
-	Direction string `json:"direction"`
-	Onset     int    `json:"onset"`
+	Direction string  `json:"direction"`
+	Onset     float64 `json:"onset"`
 	skip      bool
 }
 
@@ -61,7 +62,7 @@ func (s *Song) Update() error {
 
 	// Remove old notes from PlayingNotes
 	for i, n := range s.PlayingNotes {
-		if s.GetPositionInBPM() > float64(n.Onset)+1 { // 1 beat buffer
+		if s.GetPositionInBPM() > n.Onset+1 { // 1 beat buffer
 			if !n.skip {
 				s.scene.handleMistake()
 			}
@@ -72,7 +73,7 @@ func (s *Song) Update() error {
 	// Get playing notes
 	for s.noteIndex < len(s.Notes) {
 		n := s.Notes[s.noteIndex]
-		if s.GetPositionInBPM()+s.offsetBpm >= float64(n.Onset) {
+		if s.GetPositionInBPM()+s.offsetBpm >= n.Onset {
 			s.PlayingNotes[s.noteIndex] = n
 			s.noteIndex++
 		} else {
@@ -121,4 +122,28 @@ func (s *Song) GetPositionInBPM() float64 {
 
 func (s *Song) GetTicksPerBeat() float64 {
 	return (60 * 60) / float64(s.Bpm)
+}
+
+func (s *Song) SetPositionInBPM(beats float64) {
+	// 1. Calculate the time in seconds from the beat position.
+	seconds := beats / (float64(s.Bpm) / 60.0)
+	seekDuration := time.Duration(seconds * float64(time.Second))
+
+	// 2. Seek the audio player.
+	if s.scene.songPlayer != nil {
+		s.scene.songPlayer.Seek(seekDuration)
+	}
+
+	// 3. Update the noteIndex.
+	s.noteIndex = 0
+	for i, n := range s.Notes {
+		if n.Onset < beats {
+			s.noteIndex = i + 1
+		} else {
+			break
+		}
+	}
+
+	// 4. Clear PlayingNotes.
+	s.PlayingNotes = make(map[int]*Note)
 }
