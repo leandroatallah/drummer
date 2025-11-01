@@ -50,7 +50,9 @@ func NewMenuScene(context *core.AppContext) *MenuScene {
 func (s *MenuScene) OnStart() {
 	// Init audio
 	s.AudioManager().PauseAll()
-	s.AudioManager().PlayMusic(bgSound)
+	if !s.AudioManager().IsPlayingSomething() {
+		s.AudioManager().PlayMusic(bgSound)
+	}
 }
 
 func (s *MenuScene) Update() error {
@@ -62,7 +64,7 @@ func (s *MenuScene) Update() error {
 
 	if !s.IsKeysDisabled && ebiten.IsKeyPressed(ebiten.KeyEnter) {
 		s.DisableKeys()
-		s.Manager.NavigateTo(SceneTrackSelection, transition.NewFader())
+		s.Manager.NavigateTo(SceneTrackSelection, transition.NewFader(), false)
 	}
 
 	return nil

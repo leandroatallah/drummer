@@ -25,6 +25,7 @@ type Song struct {
 	Title    string  `json:"title"`
 	Filename string  `json:"filename"`
 	Bpm      int     `json:"bpm"`
+	Duration float64 `json:"duration"`
 	Notes    []*Note `json:"notes"`
 	scene    *PlayScene
 
@@ -122,6 +123,10 @@ func (s *Song) GetPositionInBPM() float64 {
 
 func (s *Song) GetTicksPerBeat() float64 {
 	return (60 * 60) / float64(s.Bpm)
+}
+
+func (s *Song) IsOver() bool {
+	panic("implement me")
 }
 
 func (s *Song) SetPositionInBPM(beats float64) {

@@ -67,7 +67,7 @@ func Setup() {
 	game := game.NewGame(appContext)
 
 	// Set initial game scene
-	game.AppContext.SceneManager.NavigateTo(gamescene.SceneMenu, nil)
+	game.AppContext.SceneManager.NavigateTo(gamescene.SceneMenu, nil, false)
 
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)

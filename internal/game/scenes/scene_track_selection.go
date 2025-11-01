@@ -47,6 +47,8 @@ func NewTrackSelectionScene(context *core.AppContext) *TrackSelectionScene {
 
 func (s *TrackSelectionScene) OnStart() {
 	s.audiomanager = s.Manager.AudioManager()
+
+	s.EnableKeys()
 }
 
 func (s *TrackSelectionScene) Update() error {
@@ -54,7 +56,7 @@ func (s *TrackSelectionScene) Update() error {
 
 	if !s.IsKeysDisabled && ebiten.IsKeyPressed(ebiten.KeyEnter) {
 		s.DisableKeys()
-		s.Manager.NavigateTo(ScenePlay, transition.NewFader())
+		s.Manager.NavigateTo(ScenePlay, transition.NewFader(), true)
 	}
 
 	return nil

@@ -12,12 +12,20 @@ const (
 	SceneTrackSelection
 )
 
-func InitSceneMap(context *core.AppContext) map[navigation.SceneType]navigation.Scene {
-	SceneMap := map[navigation.SceneType]navigation.Scene{
-		SceneIntro:          NewIntroScene(context),
-		SceneMenu:           NewMenuScene(context),
-		ScenePlay:           NewPlayScene(context),
-		SceneTrackSelection: NewTrackSelectionScene(context),
+func InitSceneMap(context *core.AppContext) navigation.SceneMap {
+	sceneMap := navigation.SceneMap{
+		SceneIntro: func() navigation.Scene {
+			return NewIntroScene(context)
+		},
+		SceneMenu: func() navigation.Scene {
+			return NewMenuScene(context)
+		},
+		ScenePlay: func() navigation.Scene {
+			return NewPlayScene(context)
+		},
+		SceneTrackSelection: func() navigation.Scene {
+			return NewTrackSelectionScene(context)
+		},
 	}
-	return SceneMap
+	return sceneMap
 }

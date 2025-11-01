@@ -2,6 +2,7 @@
   "title": "Sample Song",
   "filename": "smell-like-teen-spirit.ogg",
   "bpm": 120,
+  "duration": 261,
   "notes": [
     { "direction": "left", "onset": 14 },
     { "direction": "left", "onset": 15 },
