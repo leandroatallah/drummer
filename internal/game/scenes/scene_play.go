@@ -172,7 +172,7 @@ func (s *PlayScene) OnStart() {
 func (s *PlayScene) Update() error {
 	s.count++
 
-	// Wait menu soung end before start
+	// Wait menu sound end before start
 	if s.songPlayer == nil && !s.AudioManager().IsPlayingSomething() {
 		s.AudioManager().SetVolume(1)
 		s.songPlayer = s.AudioManager().PlaySound("assets/audio/" + s.song.Filename)

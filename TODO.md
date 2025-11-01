@@ -2,6 +2,11 @@
 
 ## 🎯 HIGH PRIORITY - Core Game Mechanics
 
+- Use concurrency when needed
+- use some notes buffer to improve performance and reuse notes structs instead eliminate.
+- Add some delay between sound scene transitions
+- Add different difficulties
+
 ### Technical debits and wishlist
 
 - Create shape package to split some things from physics package.
