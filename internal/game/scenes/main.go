@@ -10,6 +10,7 @@ const (
 	SceneMenu
 	ScenePlay
 	SceneTrackSelection
+	SceneThanks
 )
 
 func InitSceneMap(context *core.AppContext) navigation.SceneMap {
@@ -25,6 +26,9 @@ func InitSceneMap(context *core.AppContext) navigation.SceneMap {
 		},
 		SceneTrackSelection: func() navigation.Scene {
 			return NewTrackSelectionScene(context)
+		},
+		SceneThanks: func() navigation.Scene {
+			return NewThanksScene(context)
 		},
 	}
 	return sceneMap

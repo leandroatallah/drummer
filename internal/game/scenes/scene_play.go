@@ -120,6 +120,7 @@ type PlayScene struct {
 	song           *Song
 	speed          float64
 	songPlayer     *audio.Player
+	isOver         bool
 
 	// Cached images
 	containerImage *CachedImage
@@ -171,9 +172,18 @@ func (s *PlayScene) OnStart() {
 func (s *PlayScene) Update() error {
 	s.count++
 
+	// Wait menu soung end before start
 	if s.songPlayer == nil && !s.AudioManager().IsPlayingSomething() {
 		s.AudioManager().SetVolume(1)
 		s.songPlayer = s.AudioManager().PlaySound("assets/audio/" + s.song.Filename)
+		s.song.SetPositionInBPM(500)
+	}
+
+	// The soung is over
+	if !s.isOver && s.songPlayer != nil && !s.songPlayer.IsPlaying() {
+		s.isOver = true
+		s.DisableKeys()
+		s.AppContext.SceneManager.NavigateTo(SceneThanks, transition.NewFader(), true)
 	}
 
 	if s.songPlayer != nil && s.songPlayer.IsPlaying() {
@@ -213,15 +223,6 @@ func (s *PlayScene) OnFinish() {
 	if s.songPlayer != nil {
 		s.songPlayer.Pause()
 	}
-}
-
-func (s *PlayScene) finishLevel() {
-	if s.levelCompleted {
-		return
-	}
-
-	s.levelCompleted = true
-	s.AppContext.SceneManager.NavigateTo(SceneMenu, transition.NewFader())
 }
 
 func createPlayer(appContext *core.AppContext) (actors.PlayerEntity, error) {
