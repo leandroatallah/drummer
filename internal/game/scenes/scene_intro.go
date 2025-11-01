@@ -11,7 +11,6 @@ import (
 	"github.com/leandroatallah/firefly/internal/engine/core/scene"
 	"github.com/leandroatallah/firefly/internal/engine/core/screenutil"
 	"github.com/leandroatallah/firefly/internal/engine/core/transition"
-	"github.com/leandroatallah/firefly/internal/engine/systems/audiomanager"
 )
 
 const (
@@ -41,7 +40,6 @@ type IntroScene struct {
 	duration       int
 	introAnimation introAnimation
 	fadeOverlay    *ebiten.Image
-	audiomanager   *audiomanager.AudioManager
 }
 
 func NewIntroScene(context *core.AppContext) *IntroScene {

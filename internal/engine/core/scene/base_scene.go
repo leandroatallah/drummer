@@ -8,6 +8,7 @@ import (
 	"github.com/leandroatallah/firefly/internal/engine/contracts/navigation"
 	"github.com/leandroatallah/firefly/internal/engine/core"
 	"github.com/leandroatallah/firefly/internal/engine/systems/audiomanager"
+	"github.com/leandroatallah/firefly/internal/engine/systems/imagemanager"
 	"github.com/leandroatallah/firefly/internal/engine/systems/physics"
 )
 
@@ -15,6 +16,7 @@ type BaseScene struct {
 	count          int
 	Manager        navigation.SceneManager
 	audiomanager   *audiomanager.AudioManager
+	imagemanager   *imagemanager.ImageManager
 	space          *physics.Space
 	AppContext     *core.AppContext
 	IsKeysDisabled bool
@@ -31,8 +33,9 @@ func (s *BaseScene) Update() error {
 }
 
 func (s *BaseScene) OnStart() {
-	// Init audio manager
+	// Init asset managers
 	s.audiomanager = s.AppContext.AudioManager
+	s.imagemanager = s.AppContext.ImageManager
 }
 
 func (s *BaseScene) OnFinish() {}
@@ -50,6 +53,7 @@ func (s *BaseScene) SetAppContext(appContext any) {
 	s.AppContext = appContext.(*core.AppContext)
 	s.Manager = s.AppContext.SceneManager
 	s.audiomanager = s.AppContext.AudioManager
+	s.imagemanager = s.AppContext.ImageManager
 }
 
 func (s *BaseScene) PhysicsSpace() *physics.Space {
@@ -61,6 +65,10 @@ func (s *BaseScene) PhysicsSpace() *physics.Space {
 
 func (s *BaseScene) AudioManager() *audiomanager.AudioManager {
 	return s.audiomanager
+}
+
+func (s *BaseScene) ImageManager() *imagemanager.ImageManager {
+	return s.imagemanager
 }
 
 func (s *BaseScene) EnableKeys() {

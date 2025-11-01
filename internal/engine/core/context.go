@@ -5,6 +5,7 @@ import (
 	"github.com/leandroatallah/firefly/internal/engine/contracts/navigation"
 	"github.com/leandroatallah/firefly/internal/engine/core/levels"
 	"github.com/leandroatallah/firefly/internal/engine/systems/audiomanager"
+	"github.com/leandroatallah/firefly/internal/engine/systems/imagemanager"
 	"github.com/leandroatallah/firefly/internal/engine/systems/input"
 	"github.com/leandroatallah/firefly/internal/engine/systems/speech"
 )
@@ -16,6 +17,7 @@ import (
 type AppContext struct {
 	InputManager          *input.Manager
 	AudioManager          *audiomanager.AudioManager
+	ImageManager          *imagemanager.ImageManager
 	DialogueManager       *speech.Manager
 	ActorManager          *actors.Manager
 	SceneManager          navigation.SceneManager

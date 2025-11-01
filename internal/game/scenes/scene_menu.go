@@ -12,7 +12,6 @@ import (
 	"github.com/leandroatallah/firefly/internal/engine/core"
 	"github.com/leandroatallah/firefly/internal/engine/core/scene"
 	"github.com/leandroatallah/firefly/internal/engine/core/transition"
-	"github.com/leandroatallah/firefly/internal/engine/systems/audiomanager"
 )
 
 const (
@@ -33,7 +32,6 @@ type MenuScene struct {
 	scene.BaseScene
 
 	count          int
-	audiomanager   *audiomanager.AudioManager
 	fontText       *font.FontText
 	showPressStart bool
 }
@@ -51,9 +49,8 @@ func NewMenuScene(context *core.AppContext) *MenuScene {
 
 func (s *MenuScene) OnStart() {
 	// Init audio
-	s.audiomanager = s.Manager.AudioManager()
-	s.audiomanager.PauseAll()
-	s.audiomanager.PlayMusic(bgSound)
+	s.AudioManager().PauseAll()
+	s.AudioManager().PlayMusic(bgSound)
 }
 
 func (s *MenuScene) Update() error {

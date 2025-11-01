@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/leandroatallah/firefly/internal/config"
 	"github.com/leandroatallah/firefly/internal/engine/actors"
 	"github.com/leandroatallah/firefly/internal/engine/assets/font"
@@ -14,6 +15,7 @@ import (
 	"github.com/leandroatallah/firefly/internal/engine/core/levels"
 	"github.com/leandroatallah/firefly/internal/engine/core/scene"
 	"github.com/leandroatallah/firefly/internal/engine/systems/audiomanager"
+	"github.com/leandroatallah/firefly/internal/engine/systems/imagemanager"
 	"github.com/leandroatallah/firefly/internal/engine/systems/input"
 	"github.com/leandroatallah/firefly/internal/engine/systems/speech"
 	gamescene "github.com/leandroatallah/firefly/internal/game/scenes"
@@ -28,6 +30,7 @@ func Setup() {
 	// Initialize all systems and managers
 	inputManager := input.NewManager()
 	audioManager := audiomanager.NewAudioManager()
+	imageManager := imagemanager.NewImageManager()
 	sceneManager := scene.NewSceneManager()
 	levelManager := levels.NewManager()
 	actorManager := actors.NewManager()
@@ -41,12 +44,13 @@ func Setup() {
 	speechBubble := gamespeech.NewSpeechBubble(speechFont)
 	dialogueManager := speech.NewManager(speechBubble)
 
-	// Load audio assets
+	// Load assets
 	loadAudioAssets(audioManager)
 
 	appContext := &core.AppContext{
 		InputManager:    inputManager,
 		AudioManager:    audioManager,
+		ImageManager:    imageManager,
 		DialogueManager: dialogueManager,
 		ActorManager:    actorManager,
 		SceneManager:    sceneManager,
@@ -85,6 +89,25 @@ func loadAudioAssets(am *audiomanager.AudioManager) {
 				continue
 			}
 			am.Add(audioItem.Name(), audioItem.Data())
+		}
+	}
+}
+
+// loadImageAssets is a helper function to load all images files from the assets directory.
+func loadImageAssets(m *imagemanager.ImageManager) {
+	files, err := os.ReadDir("assets/images")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, file := range files {
+		if !file.IsDir() {
+			path := "assets/images/" + file.Name()
+			img, _, err := ebitenutil.NewImageFromFile(path)
+			if err != nil {
+				log.Printf("error loading image file %s: %v", file.Name(), err)
+				continue
+			}
+			m.Add(file.Name(), img)
 		}
 	}
 }
