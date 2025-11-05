@@ -2,7 +2,7 @@ package physics
 
 import (
 	"github.com/google/uuid"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/body"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/body"
 )
 
 type FacingDirectionEnum int

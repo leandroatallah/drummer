@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/leandroatallah/firefly/internal/config"
-	"github.com/leandroatallah/firefly/internal/engine/actors"
-	"github.com/leandroatallah/firefly/internal/engine/camera"
-	"github.com/leandroatallah/firefly/internal/engine/core"
-	"github.com/leandroatallah/firefly/internal/engine/items"
-	"github.com/leandroatallah/firefly/internal/engine/systems/audiomanager"
-	"github.com/leandroatallah/firefly/internal/engine/systems/tilemap"
+	"github.com/leandroatallah/drummer/internal/config"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/camera"
+	"github.com/leandroatallah/drummer/internal/engine/core"
+	"github.com/leandroatallah/drummer/internal/engine/items"
+	"github.com/leandroatallah/drummer/internal/engine/systems/audiomanager"
+	"github.com/leandroatallah/drummer/internal/engine/systems/tilemap"
 )
 
 type TilemapScene struct {

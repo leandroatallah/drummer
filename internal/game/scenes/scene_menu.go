@@ -7,11 +7,11 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
-	"github.com/leandroatallah/firefly/internal/config"
-	"github.com/leandroatallah/firefly/internal/engine/assets/font"
-	"github.com/leandroatallah/firefly/internal/engine/core"
-	"github.com/leandroatallah/firefly/internal/engine/core/scene"
-	"github.com/leandroatallah/firefly/internal/engine/core/transition"
+	"github.com/leandroatallah/drummer/internal/config"
+	"github.com/leandroatallah/drummer/internal/engine/assets/font"
+	"github.com/leandroatallah/drummer/internal/engine/core"
+	"github.com/leandroatallah/drummer/internal/engine/core/scene"
+	"github.com/leandroatallah/drummer/internal/engine/core/transition"
 )
 
 const (

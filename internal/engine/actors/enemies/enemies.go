@@ -1,8 +1,8 @@
 package enemies
 
 import (
-	"github.com/leandroatallah/firefly/internal/engine/actors"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/body"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/body"
 )
 
 type BaseEnemy struct {

@@ -1,7 +1,7 @@
 package sequences
 
 import (
-	"github.com/leandroatallah/firefly/internal/engine/core"
+	"github.com/leandroatallah/drummer/internal/engine/core"
 )
 
 // SequencePlayer manages the execution of a sequence.

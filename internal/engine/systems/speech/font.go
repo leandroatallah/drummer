@@ -3,7 +3,7 @@ package speech
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
-	"github.com/leandroatallah/firefly/internal/engine/assets/font"
+	"github.com/leandroatallah/drummer/internal/engine/assets/font"
 )
 
 type SpeechFont struct {

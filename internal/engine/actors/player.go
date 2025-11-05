@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/body"
-	"github.com/leandroatallah/firefly/internal/engine/systems/physics"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/body"
+	"github.com/leandroatallah/drummer/internal/engine/systems/physics"
 )
 
 const (

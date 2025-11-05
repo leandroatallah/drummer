@@ -1,8 +1,8 @@
 package gamescene
 
 import (
-	"github.com/leandroatallah/firefly/internal/engine/contracts/navigation"
-	"github.com/leandroatallah/firefly/internal/engine/core"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/navigation"
+	"github.com/leandroatallah/drummer/internal/engine/core"
 )
 
 const (

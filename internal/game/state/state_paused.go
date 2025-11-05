@@ -1,6 +1,6 @@
 package gamestate
 
-import "github.com/leandroatallah/firefly/internal/engine/core/game/state"
+import "github.com/leandroatallah/drummer/internal/engine/core/game/state"
 
 type PausedState struct {
 	state.BaseState

@@ -3,10 +3,10 @@ package gameenemies
 import (
 	"log"
 
-	"github.com/leandroatallah/firefly/internal/engine/actors"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/body"
-	"github.com/leandroatallah/firefly/internal/engine/systems/physics"
-	"github.com/leandroatallah/firefly/internal/engine/systems/sprites"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/body"
+	"github.com/leandroatallah/drummer/internal/engine/systems/physics"
+	"github.com/leandroatallah/drummer/internal/engine/systems/sprites"
 )
 
 type BlueEnemy struct {

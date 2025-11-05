@@ -3,7 +3,7 @@ package physics
 import (
 	"sync"
 
-	"github.com/leandroatallah/firefly/internal/engine/contracts/body"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/body"
 )
 
 // Space centralizes physics bodies and collision resolution.

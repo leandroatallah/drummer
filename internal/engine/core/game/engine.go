@@ -11,9 +11,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
-	"github.com/leandroatallah/firefly/internal/config"
-	"github.com/leandroatallah/firefly/internal/engine/core"
-	"github.com/leandroatallah/firefly/internal/engine/core/game/state"
+	"github.com/leandroatallah/drummer/internal/config"
+	"github.com/leandroatallah/drummer/internal/engine/core"
+	"github.com/leandroatallah/drummer/internal/engine/core/game/state"
 	"golang.org/x/image/font"
 )
 

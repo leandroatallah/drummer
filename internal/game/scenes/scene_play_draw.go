@@ -5,7 +5,7 @@ import (
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/leandroatallah/firefly/internal/config"
+	"github.com/leandroatallah/drummer/internal/config"
 )
 
 const (

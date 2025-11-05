@@ -9,8 +9,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
-	"github.com/leandroatallah/firefly/internal/config"
-	"github.com/leandroatallah/firefly/internal/engine/systems/speech"
+	"github.com/leandroatallah/drummer/internal/config"
+	"github.com/leandroatallah/drummer/internal/engine/systems/speech"
 )
 
 const (

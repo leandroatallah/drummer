@@ -1,9 +1,9 @@
 package actors
 
 import (
-	"github.com/leandroatallah/firefly/internal/engine/core/screenutil"
-	"github.com/leandroatallah/firefly/internal/engine/systems/physics"
-	"github.com/leandroatallah/firefly/internal/engine/systems/sprites"
+	"github.com/leandroatallah/drummer/internal/engine/core/screenutil"
+	"github.com/leandroatallah/drummer/internal/engine/systems/physics"
+	"github.com/leandroatallah/drummer/internal/engine/systems/sprites"
 )
 
 type PlayerTopDown struct {

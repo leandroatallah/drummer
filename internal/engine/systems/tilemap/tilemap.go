@@ -5,7 +5,7 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/leandroatallah/firefly/internal/config"
+	"github.com/leandroatallah/drummer/internal/config"
 )
 
 type Tilemap struct {

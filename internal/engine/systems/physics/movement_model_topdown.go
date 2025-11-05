@@ -4,9 +4,9 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/leandroatallah/firefly/internal/config"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/body"
-	"github.com/leandroatallah/firefly/internal/engine/systems/input"
+	"github.com/leandroatallah/drummer/internal/config"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/body"
+	"github.com/leandroatallah/drummer/internal/engine/systems/input"
 )
 
 type TopDownMovementModel struct {

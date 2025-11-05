@@ -5,7 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
-	"github.com/leandroatallah/firefly/internal/config"
+	"github.com/leandroatallah/drummer/internal/config"
 )
 
 type ObstacleRect struct {

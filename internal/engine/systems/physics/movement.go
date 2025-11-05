@@ -3,8 +3,8 @@ package physics
 import (
 	"math"
 
-	"github.com/leandroatallah/firefly/internal/config"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/body"
+	"github.com/leandroatallah/drummer/internal/config"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/body"
 )
 
 const (

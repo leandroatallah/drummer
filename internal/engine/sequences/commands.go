@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/leandroatallah/firefly/internal/engine/actors"
-	"github.com/leandroatallah/firefly/internal/engine/core"
-	"github.com/leandroatallah/firefly/internal/engine/systems/speech"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/core"
+	"github.com/leandroatallah/drummer/internal/engine/systems/speech"
 )
 
 // DialogueCommand displays one or more lines of text and waits for player input.

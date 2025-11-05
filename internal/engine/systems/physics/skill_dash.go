@@ -3,7 +3,7 @@ package physics
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/leandroatallah/firefly/internal/config"
+	"github.com/leandroatallah/drummer/internal/config"
 )
 
 // DashSkill implements a dash and air dash ability.

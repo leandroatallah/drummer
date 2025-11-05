@@ -1,13 +1,13 @@
 package core
 
 import (
-	"github.com/leandroatallah/firefly/internal/engine/actors"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/navigation"
-	"github.com/leandroatallah/firefly/internal/engine/core/levels"
-	"github.com/leandroatallah/firefly/internal/engine/systems/audiomanager"
-	"github.com/leandroatallah/firefly/internal/engine/systems/imagemanager"
-	"github.com/leandroatallah/firefly/internal/engine/systems/input"
-	"github.com/leandroatallah/firefly/internal/engine/systems/speech"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/navigation"
+	"github.com/leandroatallah/drummer/internal/engine/core/levels"
+	"github.com/leandroatallah/drummer/internal/engine/systems/audiomanager"
+	"github.com/leandroatallah/drummer/internal/engine/systems/imagemanager"
+	"github.com/leandroatallah/drummer/internal/engine/systems/input"
+	"github.com/leandroatallah/drummer/internal/engine/systems/speech"
 )
 
 // AppContext holds all major systems and services that are shared across the

@@ -1,7 +1,7 @@
 package gameitems
 
 import (
-	"github.com/leandroatallah/firefly/internal/engine/items"
+	"github.com/leandroatallah/drummer/internal/engine/items"
 )
 
 const (

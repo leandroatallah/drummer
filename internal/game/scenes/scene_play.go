@@ -9,13 +9,13 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/leandroatallah/firefly/internal/config"
-	"github.com/leandroatallah/firefly/internal/engine/actors"
-	"github.com/leandroatallah/firefly/internal/engine/assets/font"
-	"github.com/leandroatallah/firefly/internal/engine/core"
-	"github.com/leandroatallah/firefly/internal/engine/core/scene"
-	"github.com/leandroatallah/firefly/internal/engine/core/transition"
-	gameplayer "github.com/leandroatallah/firefly/internal/game/actors/player"
+	"github.com/leandroatallah/drummer/internal/config"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/assets/font"
+	"github.com/leandroatallah/drummer/internal/engine/core"
+	"github.com/leandroatallah/drummer/internal/engine/core/scene"
+	"github.com/leandroatallah/drummer/internal/engine/core/transition"
+	gameplayer "github.com/leandroatallah/drummer/internal/game/actors/player"
 )
 
 const (

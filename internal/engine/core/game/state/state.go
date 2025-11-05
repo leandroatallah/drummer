@@ -1,7 +1,7 @@
 package state
 
 import (
-	"github.com/leandroatallah/firefly/internal/engine/core"
+	"github.com/leandroatallah/drummer/internal/engine/core"
 )
 
 type GameState interface {

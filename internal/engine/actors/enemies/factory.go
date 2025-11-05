@@ -3,7 +3,7 @@ package enemies
 import (
 	"fmt"
 
-	"github.com/leandroatallah/firefly/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
 )
 
 // To be initialized on game package.

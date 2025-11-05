@@ -3,7 +3,7 @@ package physics
 import (
 	"image"
 
-	"github.com/leandroatallah/firefly/internal/config"
+	"github.com/leandroatallah/drummer/internal/config"
 )
 
 type Rect struct {

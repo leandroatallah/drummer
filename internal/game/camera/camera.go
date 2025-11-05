@@ -1,7 +1,7 @@
 package gamecamera
 
 import (
-	enginecamera "github.com/leandroatallah/firefly/internal/engine/camera"
+	enginecamera "github.com/leandroatallah/drummer/internal/engine/camera"
 )
 
 // New creates a new camera controller with game-specific settings.

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/leandroatallah/firefly/internal/engine/systems/physics"
+	"github.com/leandroatallah/drummer/internal/engine/systems/physics"
 )
 
 type ShapeRect struct {

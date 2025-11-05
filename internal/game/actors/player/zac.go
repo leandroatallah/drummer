@@ -1,8 +1,8 @@
 package gameplayer
 
 import (
-	"github.com/leandroatallah/firefly/internal/engine/actors"
-	"github.com/leandroatallah/firefly/internal/engine/systems/physics"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/systems/physics"
 )
 
 type ZacPlayer struct {

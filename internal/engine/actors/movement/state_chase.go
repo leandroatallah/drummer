@@ -4,7 +4,7 @@ import (
 	"container/heap"
 	"image"
 
-	"github.com/leandroatallah/firefly/internal/engine/contracts/body"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/body"
 )
 
 // ChaseMovementState implements the A* pathfinding algorithm to chase a target.

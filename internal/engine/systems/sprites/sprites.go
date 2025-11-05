@@ -5,7 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/animation"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/animation"
 )
 
 // ?

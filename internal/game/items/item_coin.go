@@ -3,12 +3,12 @@ package gameitems
 import (
 	"log"
 
-	"github.com/leandroatallah/firefly/internal/engine/actors"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/body"
-	"github.com/leandroatallah/firefly/internal/engine/items"
-	"github.com/leandroatallah/firefly/internal/engine/systems/physics"
-	"github.com/leandroatallah/firefly/internal/engine/systems/sprites"
-	gameplayer "github.com/leandroatallah/firefly/internal/game/actors/player"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/body"
+	"github.com/leandroatallah/drummer/internal/engine/items"
+	"github.com/leandroatallah/drummer/internal/engine/systems/physics"
+	"github.com/leandroatallah/drummer/internal/engine/systems/sprites"
+	gameplayer "github.com/leandroatallah/drummer/internal/game/actors/player"
 )
 
 // Concrete

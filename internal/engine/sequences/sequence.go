@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/leandroatallah/firefly/internal/engine/core"
+	"github.com/leandroatallah/drummer/internal/engine/core"
 )
 
 // Command is an action to be executed in a sequence.

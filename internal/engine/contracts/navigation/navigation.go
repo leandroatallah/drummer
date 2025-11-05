@@ -2,7 +2,7 @@ package navigation
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/leandroatallah/firefly/internal/engine/systems/audiomanager"
+	"github.com/leandroatallah/drummer/internal/engine/systems/audiomanager"
 )
 
 type SceneType int

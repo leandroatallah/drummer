@@ -1,6 +1,6 @@
 package physics
 
-import "github.com/leandroatallah/firefly/internal/engine/contracts/body"
+import "github.com/leandroatallah/drummer/internal/engine/contracts/body"
 
 // TouchTrigger implements the physics.Touchable interface to handle body contact.
 type TouchTrigger struct {

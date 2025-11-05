@@ -1,4 +1,4 @@
-module github.com/leandroatallah/firefly
+module github.com/leandroatallah/drummer
 
 go 1.24.5
 

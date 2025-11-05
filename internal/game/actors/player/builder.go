@@ -1,11 +1,11 @@
 package gameplayer
 
 import (
-	"github.com/leandroatallah/firefly/internal/engine/actors"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/animation"
-	"github.com/leandroatallah/firefly/internal/engine/contracts/body"
-	"github.com/leandroatallah/firefly/internal/engine/systems/physics"
-	"github.com/leandroatallah/firefly/internal/engine/systems/sprites"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/animation"
+	"github.com/leandroatallah/drummer/internal/engine/contracts/body"
+	"github.com/leandroatallah/drummer/internal/engine/systems/physics"
+	"github.com/leandroatallah/drummer/internal/engine/systems/sprites"
 )
 
 // TODO: Move to the right place

@@ -7,24 +7,24 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/leandroatallah/firefly/internal/config"
-	"github.com/leandroatallah/firefly/internal/engine/actors"
-	"github.com/leandroatallah/firefly/internal/engine/assets/font"
-	"github.com/leandroatallah/firefly/internal/engine/core"
-	"github.com/leandroatallah/firefly/internal/engine/core/game"
-	"github.com/leandroatallah/firefly/internal/engine/core/levels"
-	"github.com/leandroatallah/firefly/internal/engine/core/scene"
-	"github.com/leandroatallah/firefly/internal/engine/systems/audiomanager"
-	"github.com/leandroatallah/firefly/internal/engine/systems/imagemanager"
-	"github.com/leandroatallah/firefly/internal/engine/systems/input"
-	"github.com/leandroatallah/firefly/internal/engine/systems/speech"
-	gamescene "github.com/leandroatallah/firefly/internal/game/scenes"
-	gamespeech "github.com/leandroatallah/firefly/internal/game/speech"
+	"github.com/leandroatallah/drummer/internal/config"
+	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/assets/font"
+	"github.com/leandroatallah/drummer/internal/engine/core"
+	"github.com/leandroatallah/drummer/internal/engine/core/game"
+	"github.com/leandroatallah/drummer/internal/engine/core/levels"
+	"github.com/leandroatallah/drummer/internal/engine/core/scene"
+	"github.com/leandroatallah/drummer/internal/engine/systems/audiomanager"
+	"github.com/leandroatallah/drummer/internal/engine/systems/imagemanager"
+	"github.com/leandroatallah/drummer/internal/engine/systems/input"
+	"github.com/leandroatallah/drummer/internal/engine/systems/speech"
+	gamescene "github.com/leandroatallah/drummer/internal/game/scenes"
+	gamespeech "github.com/leandroatallah/drummer/internal/game/speech"
 )
 
 func Setup() {
 	// Basic Ebiten setup
-	ebiten.SetWindowSize(config.Get().ScreenWidth*4, config.Get().ScreenHeight*4)
+	ebiten.SetWindowSize(config.Get().ScreenWidth*6, config.Get().ScreenHeight*6)
 	ebiten.SetWindowTitle("Firefly")
 
 	// Initialize all systems and managers
