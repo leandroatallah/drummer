@@ -36,7 +36,6 @@ type Song struct {
 }
 
 func NewSong(path string, scene *PlayScene) *Song {
-	// TODO: Read song data from JSON file.
 	jsonFile, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)

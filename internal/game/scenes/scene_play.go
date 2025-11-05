@@ -176,7 +176,6 @@ func (s *PlayScene) Update() error {
 	if s.songPlayer == nil && !s.AudioManager().IsPlayingSomething() {
 		s.AudioManager().SetVolume(1)
 		s.songPlayer = s.AudioManager().PlaySound("assets/audio/" + s.song.Filename)
-		s.song.SetPositionInBPM(500)
 	}
 
 	// The soung is over
