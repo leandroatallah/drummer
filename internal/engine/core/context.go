@@ -5,6 +5,7 @@ import (
 	"github.com/leandroatallah/drummer/internal/engine/contracts/navigation"
 	"github.com/leandroatallah/drummer/internal/engine/core/levels"
 	"github.com/leandroatallah/drummer/internal/engine/systems/audiomanager"
+	"github.com/leandroatallah/drummer/internal/engine/systems/datamanager"
 	"github.com/leandroatallah/drummer/internal/engine/systems/imagemanager"
 	"github.com/leandroatallah/drummer/internal/engine/systems/input"
 	"github.com/leandroatallah/drummer/internal/engine/systems/speech"
@@ -18,6 +19,7 @@ type AppContext struct {
 	InputManager          *input.Manager
 	AudioManager          *audiomanager.AudioManager
 	ImageManager          *imagemanager.ImageManager
+	DataManager           *datamanager.Manager
 	DialogueManager       *speech.Manager
 	ActorManager          *actors.Manager
 	SceneManager          navigation.SceneManager

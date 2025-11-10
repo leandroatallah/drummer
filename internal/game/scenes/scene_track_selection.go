@@ -7,7 +7,6 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/leandroatallah/drummer/internal/config"
 	"github.com/leandroatallah/drummer/internal/engine/assets/font"
 	"github.com/leandroatallah/drummer/internal/engine/core"
 	"github.com/leandroatallah/drummer/internal/engine/core/scene"
@@ -35,12 +34,7 @@ type TrackSelectionScene struct {
 }
 
 func NewTrackSelectionScene(context *core.AppContext) *TrackSelectionScene {
-	fontText, err := font.NewFontText(config.Get().MainFontFace)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	scene := TrackSelectionScene{fontText: fontText}
+	scene := TrackSelectionScene{}
 	scene.SetAppContext(context)
 	return &scene
 }

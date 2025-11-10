@@ -8,7 +8,6 @@ const (
 	ScreenHeight  = 144
 	Unit          = 16
 	DefaultVolume = 0.5
-	MainFontFace  = "assets/fonts/pressstart2p.ttf"
 )
 
 // TODO: Move this specifc color config to game module
@@ -92,8 +91,6 @@ func init() {
 		Colors:       defaultColors,
 
 		DefaultVolume: DefaultVolume,
-
-		MainFontFace: MainFontFace,
 	}
 }
 

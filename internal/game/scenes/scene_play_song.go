@@ -47,8 +47,12 @@ func NewSong(path string, scene *PlayScene) *Song {
 		log.Fatal(err)
 	}
 
+	return NewSongFromData(byteValue, scene)
+}
+
+func NewSongFromData(data []byte, scene *PlayScene) *Song {
 	var song Song
-	if err := json.Unmarshal(byteValue, &song); err != nil {
+	if err := json.Unmarshal(data, &song); err != nil {
 		log.Fatal(err)
 	}
 	song.PlayingNotes = make(map[int]*Note)

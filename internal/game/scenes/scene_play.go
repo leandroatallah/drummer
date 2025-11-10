@@ -40,6 +40,7 @@ var (
 	drummerRockImg    *ebiten.Image
 	arrowsLightImg    *ebiten.Image
 	arrowsDarkImg     *ebiten.Image
+	textsImg          *ebiten.Image
 )
 
 func init() {
@@ -68,6 +69,10 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	textsImg, _, err = ebitenutil.NewImageFromFile("assets/images/texts.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 type ScreenUI struct {
@@ -88,12 +93,6 @@ func NewScreenUI() *ScreenUI {
 	width := cfg.ScreenWidth - (margin * 2)
 	height := cfg.ScreenHeight - (margin * 2)
 	innerWidth := width - (paddingX * 2)
-
-	textsPath := "assets/images/texts.png"
-	textsImg, _, err := ebitenutil.NewImageFromFile(textsPath)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	return &ScreenUI{
 		margin:          margin,
@@ -127,21 +126,18 @@ type PlayScene struct {
 }
 
 func NewPlayScene(context *core.AppContext) *PlayScene {
-	mainText, err := font.NewFontText(config.Get().MainFontFace)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	// TODO: Should receive from somewhere (maybe context)
 	scene := &PlayScene{
 		BaseScene:   *scene.NewScene(),
-		mainText:    mainText,
 		ui:          NewScreenUI(),
 		keyControl:  NewKeyControl(),
 		speed:       2.0,
 		thermometer: 0,
 	}
-	song := NewSong("internal/game/songs/smell-like-teen-spirit.json", scene)
+
+	songData := context.DataManager.Get("smell-like-teen-spirit.json")
+	song := NewSongFromData(songData, scene)
+
 	scene.song = song
 
 	song.offsetBpm = 4 / scene.speed

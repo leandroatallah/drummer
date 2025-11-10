@@ -1,57 +1,53 @@
 package gamesetup
 
 import (
+	"bytes"
+	"image"
+	_ "image/png"
+	"io/fs"
 	"log"
-	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/leandroatallah/drummer/internal/config"
 	"github.com/leandroatallah/drummer/internal/engine/actors"
-	"github.com/leandroatallah/drummer/internal/engine/assets/font"
 	"github.com/leandroatallah/drummer/internal/engine/core"
 	"github.com/leandroatallah/drummer/internal/engine/core/game"
 	"github.com/leandroatallah/drummer/internal/engine/core/levels"
 	"github.com/leandroatallah/drummer/internal/engine/core/scene"
 	"github.com/leandroatallah/drummer/internal/engine/systems/audiomanager"
+	"github.com/leandroatallah/drummer/internal/engine/systems/datamanager"
 	"github.com/leandroatallah/drummer/internal/engine/systems/imagemanager"
 	"github.com/leandroatallah/drummer/internal/engine/systems/input"
-	"github.com/leandroatallah/drummer/internal/engine/systems/speech"
 	gamescene "github.com/leandroatallah/drummer/internal/game/scenes"
-	gamespeech "github.com/leandroatallah/drummer/internal/game/speech"
 )
 
-func Setup() {
+func Setup(assets fs.FS) {
 	// Basic Ebiten setup
 	ebiten.SetWindowSize(config.Get().ScreenWidth*6, config.Get().ScreenHeight*6)
-	ebiten.SetWindowTitle("Firefly")
+	ebiten.SetWindowTitle("The Drummer")
 
 	// Initialize all systems and managers
 	inputManager := input.NewManager()
 	audioManager := audiomanager.NewAudioManager()
 	imageManager := imagemanager.NewImageManager()
+	dataManager := datamanager.NewDataManager()
 	sceneManager := scene.NewSceneManager()
 	levelManager := levels.NewManager()
 	actorManager := actors.NewManager()
 
-	// Initialize Dialogue Manager
-	fontText, err := font.NewFontText("assets/fonts/Silkscreen-Regular.ttf")
-	if err != nil {
-		log.Fatal(err)
-	}
-	speechFont := speech.NewSpeechFont(fontText, 8, 14)
-	speechBubble := gamespeech.NewSpeechBubble(speechFont)
-	dialogueManager := speech.NewManager(speechBubble)
-
 	// Load assets
-	loadAudioAssets(audioManager)
+	loadAudioAssetsFromFS(assets, audioManager)
+	loadImageAssetsFromFS(assets, imageManager)
+	loadDataAssetsFromFS(assets, dataManager)
 
 	appContext := &core.AppContext{
 		InputManager:    inputManager,
 		AudioManager:    audioManager,
 		ImageManager:    imageManager,
-		DialogueManager: dialogueManager,
+		DataManager:     dataManager,
+		DialogueManager: nil,
 		ActorManager:    actorManager,
 		SceneManager:    sceneManager,
 		LevelManager:    levelManager,
@@ -74,40 +70,72 @@ func Setup() {
 	}
 }
 
-// loadAudioAssets is a helper function to load all audio files from the assets directory.
-func loadAudioAssets(am *audiomanager.AudioManager) {
-	files, err := os.ReadDir("assets/audio")
-	if err != nil {
-		log.Fatal(err)
+// loadAudioAssetsFromFS is a helper function to load all audio files from an fs.FS.
+func loadAudioAssetsFromFS(assets fs.FS, am *audiomanager.AudioManager) {
+	files := []string{
+		"black-sabbath-paranoid.ogg",
+		"jab8.ogg",
+		"kick_backOGG.ogg",
+		"smell-like-teen-spirit.ogg",
 	}
 	for _, file := range files {
-		if !file.IsDir() && (strings.HasSuffix(file.Name(), ".ogg") || strings.HasSuffix(file.Name(), ".wav")) {
-			path := "assets/audio/" + file.Name()
-			audioItem, err := am.Load(path)
+		path := "assets/audio/" + file
+		audioItem, err := am.LoadFromFS(assets, path)
+		if err != nil {
+			log.Printf("error loading audio file from FS %s: %v", file, err)
+			continue
+		}
+		am.Add(audioItem.Name(), audioItem.Data())
+	}
+}
+
+// loadImageAssetsFromFS is a helper function to load all images files from an fs.FS.
+func loadImageAssetsFromFS(assets fs.FS, m *imagemanager.ImageManager) {
+	dir := "assets/images"
+	files, err := fs.ReadDir(assets, dir)
+	if err != nil {
+		log.Fatalf("error reading embedded images dir: %v", err)
+	}
+
+	for _, file := range files {
+		if !file.IsDir() {
+			path := dir + "/" + file.Name()
+			fileData, err := fs.ReadFile(assets, path)
 			if err != nil {
-				log.Printf("error loading audio file %s: %v", file.Name(), err)
+				log.Printf("error reading embedded image file %s: %v", file.Name(), err)
 				continue
 			}
-			am.Add(audioItem.Name(), audioItem.Data())
+
+			img, _, err := image.Decode(bytes.NewReader(fileData))
+			if err != nil {
+				log.Printf("error decoding image file %s: %v", file.Name(), err)
+				continue
+			}
+			ebitenImg := ebiten.NewImageFromImage(img)
+			m.Add(file.Name(), ebitenImg)
 		}
 	}
 }
 
-// loadImageAssets is a helper function to load all images files from the assets directory.
-func loadImageAssets(m *imagemanager.ImageManager) {
-	files, err := os.ReadDir("assets/images")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, file := range files {
-		if !file.IsDir() {
-			path := "assets/images/" + file.Name()
-			img, _, err := ebitenutil.NewImageFromFile(path)
-			if err != nil {
-				log.Printf("error loading image file %s: %v", file.Name(), err)
-				continue
-			}
-			m.Add(file.Name(), img)
+// loadDataAssetsFromFS loads all .json files from the assets directory into the DataManager.
+func loadDataAssetsFromFS(assets fs.FS, dm *datamanager.Manager) {
+	err := fs.WalkDir(assets, "assets", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
 		}
+		if !d.IsDir() && strings.HasSuffix(path, ".json") {
+			data, err := fs.ReadFile(assets, path)
+			if err != nil {
+				log.Printf("error reading data file %s: %v", path, err)
+				return nil // continue walking
+			}
+			fileName := filepath.Base(path)
+			dm.Add(fileName, data)
+		}
+		return nil
+	})
+
+	if err != nil {
+		log.Fatalf("error walking data assets directory: %v", err)
 	}
 }

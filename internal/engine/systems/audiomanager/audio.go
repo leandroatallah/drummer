@@ -3,6 +3,7 @@ package audiomanager
 import (
 	"bytes"
 	"io"
+	"io/fs"
 	"log"
 	"os"
 	"strings"
@@ -45,6 +46,26 @@ func NewAudioManager() *AudioManager {
 
 func (am *AudioManager) Load(path string) (*AudioItem, error) {
 	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	stat, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+	bs := make([]byte, stat.Size())
+	_, err = io.ReadFull(f, bs)
+	if err != nil {
+		return nil, err
+	}
+
+	return &AudioItem{path, bs}, nil
+}
+
+func (am *AudioManager) LoadFromFS(fs fs.FS, path string) (*AudioItem, error) {
+	f, err := fs.Open(path)
 	if err != nil {
 		return nil, err
 	}
