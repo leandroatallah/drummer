@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
+	"github.com/hajimehoshi/ebiten/v2/audio/mp3"
 	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
 	"github.com/hajimehoshi/ebiten/v2/audio/wav"
 )
@@ -89,6 +90,12 @@ func (am *AudioManager) Add(name string, data []byte) {
 	var err error
 
 	switch {
+	case strings.HasSuffix(name, ".mp3"):
+		s, err = mp3.DecodeWithSampleRate(sampleRate, bytes.NewReader(data))
+		if err != nil {
+			log.Printf("failed to decode mp3 file: %v", err)
+			return
+		}
 	case strings.HasSuffix(name, ".ogg"):
 		s, err = vorbis.DecodeWithSampleRate(sampleRate, bytes.NewReader(data))
 		if err != nil {

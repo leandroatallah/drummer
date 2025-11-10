@@ -72,13 +72,7 @@ func Setup(assets fs.FS) {
 
 // loadAudioAssetsFromFS is a helper function to load all audio files from an fs.FS.
 func loadAudioAssetsFromFS(assets fs.FS, am *audiomanager.AudioManager) {
-	files := []string{
-		"black-sabbath-paranoid.ogg",
-		"jab8.ogg",
-		"kick_backOGG.ogg",
-		"smell-like-teen-spirit.ogg",
-	}
-	for _, file := range files {
+	for _, file := range songFiles {
 		path := "assets/audio/" + file
 		audioItem, err := am.LoadFromFS(assets, path)
 		if err != nil {
