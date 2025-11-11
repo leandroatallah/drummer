@@ -1,24 +1,14 @@
 package gamescene
 
 import (
-	"log"
-
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/leandroatallah/drummer/internal/engine/assets"
 	"github.com/leandroatallah/drummer/internal/engine/core"
 	"github.com/leandroatallah/drummer/internal/engine/core/scene"
 	"github.com/leandroatallah/drummer/internal/engine/core/transition"
 )
 
 var bgImg *ebiten.Image
-
-func init() {
-	var err error
-	bgImg, _, err = ebitenutil.NewImageFromFile("assets/images/thank-you.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 type ThanksScene struct {
 	scene.BaseScene
@@ -31,6 +21,8 @@ func NewThanksScene(context *core.AppContext) *ThanksScene {
 }
 
 func (s *ThanksScene) OnStart() {
+	bgImg = assets.LoadImageFromFs(s.AppContext, "assets/images/thank-you.png")
+
 	s.AudioManager().PauseAll()
 	s.AudioManager().PlaySound(bgSound)
 }

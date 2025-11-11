@@ -1,10 +1,8 @@
 package gamescene
 
 import (
-	"log"
-
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/leandroatallah/drummer/internal/engine/assets"
 	"github.com/leandroatallah/drummer/internal/engine/assets/font"
 	"github.com/leandroatallah/drummer/internal/engine/core"
 	"github.com/leandroatallah/drummer/internal/engine/core/scene"
@@ -16,14 +14,6 @@ const (
 )
 
 var pressStartImg *ebiten.Image
-
-func init() {
-	var err error
-	pressStartImg, _, err = ebitenutil.NewImageFromFile("assets/images/press-start.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 type MenuScene struct {
 	scene.BaseScene
@@ -40,6 +30,7 @@ func NewMenuScene(context *core.AppContext) *MenuScene {
 }
 
 func (s *MenuScene) OnStart() {
+	pressStartImg = assets.LoadImageFromFs(s.AppContext, "assets/images/press-start.png")
 	// Init audio
 	s.AudioManager().PauseAll()
 	if !s.AudioManager().IsPlayingSomething() {

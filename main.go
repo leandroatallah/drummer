@@ -6,9 +6,9 @@ import (
 	gamesetup "github.com/leandroatallah/drummer/internal/game/setup"
 )
 
-//go:embed assets
-var assetsFs embed.FS
+//go:embed assets/*
+var embedFs embed.FS
 
 func main() {
-	gamesetup.Setup(assetsFs)
+	gamesetup.Setup(embedFs)
 }

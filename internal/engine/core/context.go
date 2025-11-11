@@ -1,6 +1,8 @@
 package core
 
 import (
+	"io/fs"
+
 	"github.com/leandroatallah/drummer/internal/engine/actors"
 	"github.com/leandroatallah/drummer/internal/engine/contracts/navigation"
 	"github.com/leandroatallah/drummer/internal/engine/core/levels"
@@ -25,6 +27,7 @@ type AppContext struct {
 	SceneManager          navigation.SceneManager
 	LevelManager          *levels.Manager
 	PlayerMovementBlocked bool
+	Assets                fs.FS
 }
 
 // SetPlayerMovementBlocked sets the flag to block or unblock player movement.

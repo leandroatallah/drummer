@@ -1,16 +1,15 @@
 package gamescene
 
 import (
-	"log"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/leandroatallah/drummer/internal/config"
 	"github.com/leandroatallah/drummer/internal/engine/actors"
+	"github.com/leandroatallah/drummer/internal/engine/assets"
 	"github.com/leandroatallah/drummer/internal/engine/assets/font"
 	"github.com/leandroatallah/drummer/internal/engine/core"
 	"github.com/leandroatallah/drummer/internal/engine/core/scene"
@@ -32,7 +31,6 @@ const (
 	thermometerHeight = 22
 )
 
-// TODO: Replace images with a initial image loading
 var (
 	illustrationDark  *ebiten.Image
 	illustrationLight *ebiten.Image
@@ -42,38 +40,6 @@ var (
 	arrowsDarkImg     *ebiten.Image
 	textsImg          *ebiten.Image
 )
-
-func init() {
-	var err error
-	illustrationLight, _, err = ebitenutil.NewImageFromFile("assets/images/illustration-light.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	illustrationDark, _, err = ebitenutil.NewImageFromFile("assets/images/illustration-dark.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	drummerIdleImg, _, err = ebitenutil.NewImageFromFile("assets/images/drummer-idle.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	drummerRockImg, _, err = ebitenutil.NewImageFromFile("assets/images/drummer-rock.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	arrowsLightImg, _, err = ebitenutil.NewImageFromFile(arrowsLightPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	arrowsDarkImg, _, err = ebitenutil.NewImageFromFile(arrowsDarkPath)
-	if err != nil {
-		log.Fatal(err)
-	}
-	textsImg, _, err = ebitenutil.NewImageFromFile("assets/images/texts.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 type ScreenUI struct {
 	margin          int
@@ -86,7 +52,7 @@ type ScreenUI struct {
 	textsImg *ebiten.Image
 }
 
-func NewScreenUI() *ScreenUI {
+func NewScreenUI(ctx *core.AppContext) *ScreenUI {
 	cfg := config.Get()
 
 	margin := 4
@@ -101,7 +67,7 @@ func NewScreenUI() *ScreenUI {
 		innerWidth:      innerWidth,
 		innerHeight:     height - (paddingY * 2) - topRowHeight - paddingY,
 		trackWidth:      innerWidth - paddingY - leftColumnWidth,
-		textsImg:        textsImg,
+		textsImg:        assets.LoadImageFromFs(ctx, "assets/images/texts.png"),
 	}
 }
 
@@ -129,7 +95,7 @@ func NewPlayScene(context *core.AppContext) *PlayScene {
 	// TODO: Should receive from somewhere (maybe context)
 	scene := &PlayScene{
 		BaseScene:   *scene.NewScene(),
-		ui:          NewScreenUI(),
+		ui:          NewScreenUI(context),
 		keyControl:  NewKeyControl(),
 		speed:       2.0,
 		thermometer: 0,
@@ -149,6 +115,14 @@ func NewPlayScene(context *core.AppContext) *PlayScene {
 
 func (s *PlayScene) OnStart() {
 	s.BaseScene.OnStart()
+
+	// Init images
+	illustrationLight = assets.LoadImageFromFs(s.AppContext, "assets/images/illustration-light.png")
+	illustrationDark = assets.LoadImageFromFs(s.AppContext, "assets/images/illustration-dark.png")
+	drummerIdleImg = assets.LoadImageFromFs(s.AppContext, "assets/images/drummer-idle.png")
+	drummerRockImg = assets.LoadImageFromFs(s.AppContext, "assets/images/drummer-rock.png")
+	arrowsLightImg = assets.LoadImageFromFs(s.AppContext, arrowsLightPath)
+	arrowsDarkImg = assets.LoadImageFromFs(s.AppContext, arrowsDarkPath)
 
 	container := s.DrawScreen()
 	containerOp := &ebiten.DrawImageOptions{}

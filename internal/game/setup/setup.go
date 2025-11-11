@@ -1,8 +1,6 @@
 package gamesetup
 
 import (
-	"bytes"
-	"image"
 	_ "image/png"
 	"io/fs"
 	"log"
@@ -10,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/leandroatallah/drummer/internal/config"
 	"github.com/leandroatallah/drummer/internal/engine/actors"
 	"github.com/leandroatallah/drummer/internal/engine/core"
@@ -51,6 +50,8 @@ func Setup(assets fs.FS) {
 		ActorManager:    actorManager,
 		SceneManager:    sceneManager,
 		LevelManager:    levelManager,
+		// TODO: Rename this
+		Assets: assets,
 	}
 
 	sceneFactory := scene.NewDefaultSceneFactory(gamescene.InitSceneMap(appContext))
@@ -94,18 +95,11 @@ func loadImageAssetsFromFS(assets fs.FS, m *imagemanager.ImageManager) {
 	for _, file := range files {
 		if !file.IsDir() {
 			path := dir + "/" + file.Name()
-			fileData, err := fs.ReadFile(assets, path)
+			ebitenImg, _, err := ebitenutil.NewImageFromFileSystem(assets, path) // Use NewImageFromFileSystem directly
 			if err != nil {
-				log.Printf("error reading embedded image file %s: %v", file.Name(), err)
+				log.Printf("error loading image file %s from FS: %v", file.Name(), err)
 				continue
 			}
-
-			img, _, err := image.Decode(bytes.NewReader(fileData))
-			if err != nil {
-				log.Printf("error decoding image file %s: %v", file.Name(), err)
-				continue
-			}
-			ebitenImg := ebiten.NewImageFromImage(img)
 			m.Add(file.Name(), ebitenImg)
 		}
 	}

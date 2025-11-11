@@ -2,11 +2,10 @@ package gamescene
 
 import (
 	"image"
-	"log"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/leandroatallah/drummer/internal/engine/assets"
 	"github.com/leandroatallah/drummer/internal/engine/assets/font"
 	"github.com/leandroatallah/drummer/internal/engine/core"
 	"github.com/leandroatallah/drummer/internal/engine/core/scene"
@@ -15,14 +14,6 @@ import (
 )
 
 var selectionImg *ebiten.Image
-
-func init() {
-	var err error
-	selectionImg, _, err = ebitenutil.NewImageFromFile("assets/images/track-selection.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
 
 type TrackSelectionScene struct {
 	scene.BaseScene
@@ -41,6 +32,8 @@ func NewTrackSelectionScene(context *core.AppContext) *TrackSelectionScene {
 
 func (s *TrackSelectionScene) OnStart() {
 	s.audiomanager = s.Manager.AudioManager()
+
+	selectionImg = assets.LoadImageFromFs(s.AppContext, "assets/images/track-selection.png")
 
 	s.EnableKeys()
 }
