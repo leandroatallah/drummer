@@ -50,7 +50,6 @@ func (s *TrackSelectionScene) Update() error {
 }
 
 func (s *TrackSelectionScene) Draw(screen *ebiten.Image) {
-
 	frameOX, frameOY := 0, 0
 	frameSprites := 3
 	frameRate := 20

@@ -1,6 +1,8 @@
 package gamescene
 
 import (
+	"image"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/leandroatallah/drummer/internal/engine/assets"
 	"github.com/leandroatallah/drummer/internal/engine/assets/font"
@@ -54,7 +56,22 @@ func (s *MenuScene) Update() error {
 }
 
 func (s *MenuScene) Draw(screen *ebiten.Image) {
-	DrawCenteredImage(screen, pressStartImg)
+	frameOX, frameOY := 0, 0
+	frameSprites := 2
+	frameRate := 30
+	width := pressStartImg.Bounds().Dx() / frameSprites
+	height := pressStartImg.Bounds().Dy()
+
+	elementWidth := pressStartImg.Bounds().Dx()
+	frameCount := elementWidth / width
+	i := (s.count / frameRate) % frameCount
+	sx, sy := frameOX+i*width, frameOY
+
+	res := pressStartImg.SubImage(
+		image.Rect(sx, sy, sx+width, sy+height),
+	).(*ebiten.Image)
+
+	DrawCenteredImage(screen, res)
 }
 
 func (s *MenuScene) OnFinish() {}
