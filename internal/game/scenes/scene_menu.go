@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	bgSound = "assets/audio/black-sabbath-paranoid.mp3"
+	bgSound = "assets/audio/black-sabbath-paranoid.ogg"
 )
 
 var pressStartImg *ebiten.Image
