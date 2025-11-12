@@ -87,8 +87,14 @@ type PlayScene struct {
 	songPlayer     *audio.Player
 	isOver         bool
 
-	// Cached images
-	containerImage *CachedImage
+	// Caching layers for draw optimization
+	staticLayer         *ebiten.Image
+	scoreLayer          *ebiten.Image
+	thermometerLayer    *ebiten.Image
+	illustrationLayer   *ebiten.Image
+	isScoreDirty        bool
+	isThermometerDirty  bool
+	isIllustrationDirty bool
 }
 
 func NewPlayScene(context *core.AppContext) *PlayScene {
@@ -115,6 +121,7 @@ func NewPlayScene(context *core.AppContext) *PlayScene {
 
 func (s *PlayScene) OnStart() {
 	s.BaseScene.OnStart()
+	cfg := config.Get()
 
 	// Init images
 	illustrationLight = assets.LoadImageFromFs(s.AppContext, "assets/images/illustration-light.png")
@@ -124,19 +131,38 @@ func (s *PlayScene) OnStart() {
 	arrowsLightImg = assets.LoadImageFromFs(s.AppContext, arrowsLightPath)
 	arrowsDarkImg = assets.LoadImageFromFs(s.AppContext, arrowsDarkPath)
 
+	// --- Initialize Layers ---
+	s.staticLayer = ebiten.NewImage(cfg.ScreenWidth, cfg.ScreenHeight)
+	s.scoreLayer = ebiten.NewImage(leftColumnWidth, scoreHeight)
+	s.thermometerLayer = ebiten.NewImage(leftColumnWidth, thermometerHeight)
+	illustrationHeight := s.ui.innerHeight - scoreHeight - thermometerHeight - (paddingY * 2)
+	s.illustrationLayer = ebiten.NewImage(leftColumnWidth, illustrationHeight)
+
+	// --- Pre-render Static Backgrounds ---
+	s.staticLayer.Fill(cfg.Colors.Medium) // Main screen background
+
+	// The main UI container
 	container := s.DrawScreen()
 	containerOp := &ebiten.DrawImageOptions{}
 	containerOp.GeoM.Translate(float64(s.ui.margin), float64(s.ui.margin))
 
-	s.drawDrummer(container)
-	s.mainTrack.Draw(container)
+	// The drummer area background
+	drummerBg := ebiten.NewImage(s.ui.innerWidth, topRowHeight)
+	drummerBg.Fill(cfg.Colors.Medium)
+	drummerBgOp := &ebiten.DrawImageOptions{}
+	drummerBgOp.GeoM.Translate(float64(paddingX), float64(paddingY))
+	container.DrawImage(drummerBg, drummerBgOp)
+
+	// The status column background
 	s.drawStatusColumn(container)
 
-	s.drawIllustration(container)
-	s.drawScore(container)
-	s.drawThermometer(container)
+	// Draw the fully prepared static container to the static layer
+	s.staticLayer.DrawImage(container, containerOp)
 
-	s.containerImage = &CachedImage{container, containerOp}
+	// --- Set Dirty Flags for First Render ---
+	s.isScoreDirty = true
+	s.isThermometerDirty = true
+	s.isIllustrationDirty = true
 }
 
 func (s *PlayScene) Update() error {
@@ -166,26 +192,52 @@ func (s *PlayScene) Update() error {
 }
 
 func (s *PlayScene) Draw(screen *ebiten.Image) {
-	cfg := config.Get()
-	screen.Fill(cfg.Colors.Medium)
+	// 1. Draw the static background, which is already composed.
+	screen.DrawImage(s.staticLayer, nil)
 
-	s.containerImage.DrawTo(screen)
+	// --- Handle semi-static layers that need updating ---
 
-	// Dynamic content
-	container, containerOp := s.DrawContainer()
-
-	s.drawIllustration(container)
-
-	if true {
-		s.drawDrummer(container)
-		s.drawScore(container)
-		s.drawThermometer(container)
+	// Redraw score only if it has changed.
+	if s.isScoreDirty {
+		s.redrawScoreLayer()
+		s.isScoreDirty = false
 	}
 
-	s.mainTrack.Draw(container)
+	// Redraw thermometer only if it has changed.
+	if s.isThermometerDirty {
+		s.redrawThermometerLayer()
+		s.isThermometerDirty = false
+	}
 
-	screen.DrawImage(container, containerOp)
-	s.containerImage.DrawOver(container)
+	// Redraw illustration only if it has changed.
+	s.redrawIllustrationLayer()
+
+	// --- Draw the cached layers to the screen at their correct positions ---
+	containerOriginX := float64(s.ui.margin)
+	containerOriginY := float64(s.ui.margin)
+
+	scoreOp := &ebiten.DrawImageOptions{}
+	scoreOp.GeoM.Translate(containerOriginX+float64(s.ui.trackWidth+paddingX+paddingY), containerOriginY+float64(topRowHeight+(paddingY*2)))
+	screen.DrawImage(s.scoreLayer, scoreOp)
+
+	thermometerOp := &ebiten.DrawImageOptions{}
+	thermometerOp.GeoM.Translate(containerOriginX+float64(s.ui.trackWidth+paddingX+paddingY), containerOriginY+float64(topRowHeight+scoreHeight+(paddingY*3)))
+	screen.DrawImage(s.thermometerLayer, thermometerOp)
+
+	illustrationOp := &ebiten.DrawImageOptions{}
+	illustrationOp.GeoM.Translate(containerOriginX+float64(s.ui.trackWidth+paddingX+paddingY), containerOriginY+float64(topRowHeight+scoreHeight+thermometerHeight+(paddingY*4)))
+	screen.DrawImage(s.illustrationLayer, illustrationOp)
+
+	// --- Draw fully dynamic elements directly on top ---
+	// We draw them into a temporary transparent image so their local coordinates match the container.
+	dynamicContainer := ebiten.NewImage(s.ui.containerWidth, s.ui.containerHeight)
+	s.drawDrummer(dynamicContainer)
+	s.mainTrack.Draw(dynamicContainer)
+
+	// Draw the dynamic container onto the screen.
+	dynamicContainerOp := &ebiten.DrawImageOptions{}
+	dynamicContainerOp.GeoM.Translate(float64(s.ui.margin), float64(s.ui.margin))
+	screen.DrawImage(dynamicContainer, dynamicContainerOp)
 }
 
 func (s *PlayScene) OnFinish() {
@@ -203,13 +255,7 @@ func createPlayer(appContext *core.AppContext) (actors.PlayerEntity, error) {
 	return p, nil
 }
 
-func (s *PlayScene) DrawContainer() (*ebiten.Image, *ebiten.DrawImageOptions) {
-	container := ebiten.NewImage(s.ui.containerWidth, s.ui.containerHeight)
-	containerOp := &ebiten.DrawImageOptions{}
-	containerOp.GeoM.Translate(float64(s.ui.margin), float64(s.ui.margin))
-
-	return container, containerOp
-}
+// DrawContainer was removed as it's no longer used by the optimized Draw method.
 
 func (s *PlayScene) handleKeyPress() {
 	s.keyControl.Reset()
@@ -278,6 +324,10 @@ func (s *PlayScene) IncreaseScore() {
 	if s.thermometer > thermometerLimit {
 		s.thermometer = thermometerLimit
 	}
+
+	s.isScoreDirty = true
+	s.isThermometerDirty = true
+	s.isIllustrationDirty = true
 }
 
 func (s *PlayScene) handleMistake() {
@@ -286,4 +336,7 @@ func (s *PlayScene) handleMistake() {
 	if s.thermometer < 0 {
 		s.thermometer = 0
 	}
+
+	s.isThermometerDirty = true
+	s.isIllustrationDirty = true
 }

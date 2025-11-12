@@ -73,7 +73,8 @@ func (s *PlayScene) drawStatusColumn(screen *ebiten.Image) {
 	screen.DrawImage(status, statusOp)
 }
 
-func (s *PlayScene) drawScore(screen *ebiten.Image) {
+func (s *PlayScene) redrawScoreLayer() {
+	s.scoreLayer.Clear()
 	score := DrawStatusRectangle(leftColumnWidth, scoreHeight)
 	scoreTitle := s.ui.textsImg.SubImage(image.Rect(0, 0, 29, 7)).(*ebiten.Image)
 	scoreTitleOp := &ebiten.DrawImageOptions{}
@@ -91,20 +92,15 @@ func (s *PlayScene) drawScore(screen *ebiten.Image) {
 	scoreAmountOp.GeoM.Translate(float64(statusBoxPadding), 11)
 	score.DrawImage(scoreTitle, scoreTitleOp)
 	score.DrawImage(scoreAmount, scoreAmountOp)
-	scoreOp := &ebiten.DrawImageOptions{}
-	scoreOp.GeoM.Translate(float64(s.ui.trackWidth+paddingX+paddingY), float64(topRowHeight+(paddingY*2)))
 
-	screen.DrawImage(score, scoreOp)
+	s.scoreLayer.DrawImage(score, nil)
 }
 
-func (s *PlayScene) drawThermometer(screen *ebiten.Image) {
+func (s *PlayScene) redrawThermometerLayer() {
+	s.thermometerLayer.Clear()
 	cfg := config.Get()
 	thermometer := DrawStatusRectangle(leftColumnWidth, thermometerHeight)
-	thermometerOp := &ebiten.DrawImageOptions{}
-	thermometerOp.GeoM.Translate(
-		float64(s.ui.trackWidth+paddingX+paddingY),
-		float64(topRowHeight+scoreHeight+(paddingY*3)),
-	)
+
 	thermTitle := s.ui.textsImg.SubImage(image.Rect(0, 8, 29, 15)).(*ebiten.Image)
 	thermOp := &ebiten.DrawImageOptions{}
 	thermOp.GeoM.Translate(float64(statusBoxPadding), float64(statusBoxPadding))
@@ -130,19 +126,15 @@ func (s *PlayScene) drawThermometer(screen *ebiten.Image) {
 		thermometer.DrawImage(block, blockOp)
 	}
 
-	screen.DrawImage(thermometer, thermometerOp)
+	s.thermometerLayer.DrawImage(thermometer, nil)
 }
 
-func (s *PlayScene) drawIllustration(screen *ebiten.Image) {
+func (s *PlayScene) redrawIllustrationLayer() {
+	s.illustrationLayer.Clear()
 	illustrationHeight := s.ui.innerHeight - scoreHeight - thermometerHeight - (paddingY * 2)
 
 	cfg := config.Get()
 	illustration := DrawStatusRectangle(leftColumnWidth, illustrationHeight)
-	illustrationOp := &ebiten.DrawImageOptions{}
-	illustrationOp.GeoM.Translate(
-		float64(s.ui.trackWidth+paddingX+paddingY),
-		float64(topRowHeight+scoreHeight+thermometerHeight+(paddingY*4)),
-	)
 
 	img := illustrationLight
 	if int(s.song.GetPositionInBPM())%2 == 0 {
@@ -169,7 +161,7 @@ func (s *PlayScene) drawIllustration(screen *ebiten.Image) {
 
 	illustration.DrawImage(streakRect, streakRectOp)
 
-	screen.DrawImage(illustration, illustrationOp)
+	s.illustrationLayer.DrawImage(illustration, nil)
 }
 
 func DrawStatusRectangle(width, height int) *ebiten.Image {
