@@ -1,10 +1,98 @@
 <!doctype html>
-<script src="wasm_exec.js"></script>
-<script>
-  const go = new Go();
-  WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(
-    (result) => {
-      go.run(result.instance);
-    },
-  );
-</script>
+<!--
+This file is provided by the Ebiten contributors.
+A similar file can be found at: https://github.com/hajimehoshi/ebiten/blob/main/examples/resources/index.html
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Drummer</title>
+    <style>
+      body {
+        background-color: #111;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      #ebiten-canvas {
+        display: none; /* Hidden by default */
+        cursor: default;
+      }
+      #loading-screen {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid #fff;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      #error-message {
+        display: none;
+        color: #ff4444;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- The loading screen UI -->
+    <div id="loading-screen">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- The canvas where the game will be rendered -->
+    <canvas id="ebiten-canvas"></canvas>
+
+    <!-- A container to show errors if WASM fails to load -->
+    <div id="error-message">
+      <p>An error occurred while loading the game.</p>
+      <p>Please check the browser console for details.</p>
+    </div>
+
+    <script src="wasm_exec.js"></script>
+    <script>
+      (async () => {
+        const loadingScreen = document.getElementById("loading-screen");
+        const canvas = document.getElementById("ebiten-canvas");
+        const errorMessage = document.getElementById("error-message");
+
+        try {
+          const go = new Go();
+          const result = await WebAssembly.instantiateStreaming(
+            fetch("main.wasm"),
+            go.importObject,
+          );
+
+          // Hide loading screen and show canvas on success
+          loadingScreen.style.display = "none";
+          canvas.style.display = "block";
+
+          go.run(result.instance);
+        } catch (err) {
+          console.error(err);
+          // Hide loading screen and show error on failure
+          loadingScreen.style.display = "none";
+          errorMessage.style.display = "block";
+        }
+      })();
+    </script>
+  </body>
+</html>
+
